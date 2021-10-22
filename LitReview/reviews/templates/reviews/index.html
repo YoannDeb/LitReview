@@ -1,0 +1,31 @@
+
+
+{% extends 'reviews/base.html' %}
+    {% block content %}
+        </br>
+        <section class="page-section cta text-center">
+            <a href="{% url 'reviews:index' %}"><button>Demander une critique</button></a>
+            <a href="{% url 'reviews:index' %}"><button>Créer une critique</button></a>
+            </br>
+            </br>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-9 mx-auto">
+                        {% for ticket in tickets %}
+                        <div class="cta-inner bg-faded text-center rounded">
+                            <h2 class="section-heading mb-4">
+                                <span class="section-heading-upper">{{ ticket.user }} a publié une critique le {{ ticket.time_created }}</span>
+                                <span class="section-heading-lower">{{ ticket.title }}</span>
+                            </h2>
+                            <p class="mb-0">{{ ticket.description }}</p>
+                            </br>
+                            <p>
+                                <img src="{{ ticket.image.url }}" alt="{{ ticket.image }}">
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+{% endblock %}
