@@ -2,12 +2,25 @@ from django.shortcuts import render
 # from django.http import HttpResponse
 from .models import Review, Ticket, UserFollow
 from django.contrib.auth.models import User
+from itertools import chain
 
 
 def index(request):
-    tickets = Ticket.objects.all().order_by('-time_created')
+    tickets = Ticket.objects.filter(user=request.user)
+    reviews = Review.objects.filter(user=request.user)
+
+    print(isinstance(tickets[0], Ticket))
+
+    followings = UserFollow.objects.filter(user=request.user)
+    for following in followings:
+        tickets | Ticket.objects.filter(user=following.followed_user)
+        reviews | Review.objects.filter(user=following.followed_user)
+
+    tickets_and_reviews = sorted(
+        chain(tickets, reviews),
+        key=lambda x: x.time_created, reverse=True)[:10]
     context = {
-        'tickets': tickets
+        'tickets_and_reviews': tickets_and_reviews
     }
     return render(request, 'reviews/index.html', context)
 
