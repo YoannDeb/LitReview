@@ -1,0 +1,22 @@
+{% extends 'reviews/base.html' %}
+    {% block content %}
+        </br>
+        <section class="page-section cta text-center">
+            <h2>Vos posts</h2>
+            </br>
+            </br>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-9 mx-auto">
+                        {% for ticket_or_review in tickets_and_reviews %}
+                            {% if ticket_or_review.title %}
+                                {% include 'reviews/ticket.html' with ticket=ticket_or_review %}
+                            {% else %}
+                                {% include 'reviews/review.html' with review=ticket_or_review %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+{% endblock %}
