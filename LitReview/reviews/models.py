@@ -42,7 +42,7 @@ class UserFollow(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user.name} following {self.followed_user.name}"
+        return f"{self.user.username} abonné à {self.followed_user.username}"
 
     class Meta:
         # ensures we don't get multiple UserFollows instances
