@@ -1,6 +1,6 @@
 <div class="cta-inner bg-faded text-center rounded">
     <h2 class="section-heading mb-4">
-        {% if ticket.user == request.user %}
+        {% if review.user == ticket.user %}
             <span class="section-heading-upper">Vous avez demandé une critique le {{ ticket.time_created }}</span>
         {% else %}
             <span class="section-heading-upper">{{ ticket.user }} a demandé une critique le {{ ticket.time_created }}</span>
