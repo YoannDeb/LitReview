@@ -1,0 +1,25 @@
+<div class="cta-inner bg-faded text-center rounded">
+    <h2 class="section-heading mb-4">
+        {% if review.user == request.user %}
+            <span class="section-heading-upper">Vous avez publié une critique le {{ review.time_created }}</span>
+        {% else %}
+            <span class="section-heading-upper">{{ review.user }} a publié une critique le {{ review.time_created }}</span>
+        {% endif %}
+        <span class="section-heading-lower">{{ review.headline }}</span>
+    </h2>
+    <p class="mb-0">{{ review.body }}</p>
+    </br>
+    <div class="cta-inner bg-faded text-center rounded">
+        <h2 class="section-heading mb-4">
+            {% if review.user == request.user %}
+                <span class="section-heading-upper">En réponse à votre ticket du {{ review.ticket.time_created }}</span>
+            {% else %}
+                <span class="section-heading-upper">En réponse au ticket de {{ review.ticket.user }} du {{ review.ticket.time_created }}</span>
+            {% endif %}
+            <span class="section-heading-lower">{{ review.ticket.title }}</span>
+        </h2>
+        <p>
+            <img src="{{ review.ticket.image.url }}" alt="">
+        </p>
+    </div>
+</div>
