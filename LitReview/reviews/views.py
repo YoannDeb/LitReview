@@ -9,8 +9,6 @@ def index(request):
     tickets = Ticket.objects.filter(user=request.user)
     reviews = Review.objects.filter(user=request.user)
 
-    print(isinstance(tickets[0], Ticket))
-
     followings = UserFollow.objects.filter(user=request.user)
     for following in followings:
         tickets | Ticket.objects.filter(user=following.followed_user)
@@ -23,6 +21,19 @@ def index(request):
         'tickets_and_reviews': tickets_and_reviews
     }
     return render(request, 'reviews/index.html', context)
+
+
+def my_posts(request):
+    tickets = Ticket.objects.filter(user=request.user)
+    reviews = Review.objects.filter(user=request.user)
+
+    tickets_and_reviews = sorted(
+        chain(tickets, reviews),
+        key=lambda x: x.time_created, reverse=True)
+    context = {
+        'tickets_and_reviews': tickets_and_reviews
+    }
+    return render(request, 'reviews/my_posts.html', context)
 
 
 def user_follows(request):
