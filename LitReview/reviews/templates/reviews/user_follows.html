@@ -1,0 +1,35 @@
+
+
+{% extends 'reviews/base.html' %}
+    {% block content %}
+        </br>
+        <section class="page-section cta text-center">
+            <h1>Suivre d'autres utilisateurs</h1>
+            <a href="{% url 'reviews:index' %}"><button>Envoyer</button></a>
+            </br>
+            </br>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-9 mx-auto">
+                        <div class="cta-inner bg-faded text-center rounded">
+                            <h2 class="section-heading mb-4">
+                                <span class="section-heading-lower">Abonnements</span>
+                                {% for following in followings %}
+                                <span class="section-heading-upper">{{ following.followed_user }}</span>
+                                {% endfor %}
+                            </h2>
+                        </div>
+                        <div class="cta-inner bg-faded text-center rounded">
+                            <h2 class="section-heading mb-4">
+                                <span class="section-heading-lower">Abonnés</span>
+                                {% for followed_by in followed_bys %}
+                                <span class="section-heading-upper">{{ followed_by.user }}</span>
+                                {% endfor %}
+                            </h2>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+{% endblock %}
