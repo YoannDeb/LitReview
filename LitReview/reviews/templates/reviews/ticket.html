@@ -15,7 +15,7 @@
     <!--  If ticket showing on index page  -->
     {% if request.get_full_path == '/reviews/' %}
         {% if not ticket.review.all %}
-            <form class="form" action="{% url 'reviews:review_creation' %}" method="post">
+            <form class="form" action="{% url 'reviews:ticket_response' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
                 <button type="submit">Soumettre une critique</button>
