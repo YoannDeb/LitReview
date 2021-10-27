@@ -1,9 +1,9 @@
 <div class="cta-inner bg-faded text-center rounded">
     <h2 class="section-heading mb-4">
         {% if request.user == review.user %}
-            <span class="section-heading-upper">Vous avez publié une critique le {{ review.time_created }}</span>
+            <span class="section-heading-upper">Votre critique du {{ review.time_created }}</span>
         {% else %}
-            <span class="section-heading-upper">{{ review.user }} a publié une critique le {{ review.time_created }}</span>
+            <span class="section-heading-upper">Critique de {{ review.user }} du {{ review.time_created }}</span>
         {% endif %}
         <span class="section-heading-lower">{{ review.headline }}</span>
         <p>{{ review.rating }} étoiles</p>
