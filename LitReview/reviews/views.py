@@ -36,6 +36,19 @@ def my_posts(request):
     return render(request, 'reviews/my_posts.html', context)
 
 
+def ticket_creation(request):
+    context = {}
+    return render(request, 'reviews/ticket_creation', context)
+
+
+def review_creation(request):
+    ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+    context = {
+        'ticket': ticket,
+    }
+    return render(request, 'reviews/review_creation.html', context)
+
+
 def user_follows(request):
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
