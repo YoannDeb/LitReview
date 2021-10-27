@@ -1,23 +1,23 @@
 {% extends 'reviews/base.html' %}
-    {% block content %}
+{% block content %}
+    </br>
+    <section class="page-section cta text-center">
+        <a href="{% url 'reviews:index' %}"><button>Demander une critique</button></a>
+        <a href="{% url 'reviews:index' %}"><button>Créer une critique</button></a>
         </br>
-        <section class="page-section cta text-center">
-            <a href="{% url 'reviews:index' %}"><button>Demander une critique</button></a>
-            <a href="{% url 'reviews:index' %}"><button>Créer une critique</button></a>
-            </br>
-            </br>
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-9 mx-auto">
-                        {% for ticket_or_review in tickets_and_reviews %}
-                            {% if ticket_or_review.title %}
-                                {% include 'reviews/ticket.html' with ticket=ticket_or_review %}
-                            {% else %}
-                                {% include 'reviews/review.html' with review=ticket_or_review %}
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+        </br>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-9 mx-auto">
+                    {% for ticket_or_review in tickets_and_reviews %}
+                        {% if ticket_or_review.title %}
+                            {% include 'reviews/ticket.html' with ticket=ticket_or_review %}
+                        {% else %}
+                            {% include 'reviews/review.html' with review=ticket_or_review %}
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 {% endblock %}
