@@ -1,0 +1,19 @@
+
+<h2>Vous êtes en train de poster en réponse à :</h2>
+{% include 'reviews/ticket.html' with ticket=ticket %}
+<h2>Votre critique :</h2>
+<div class="cta-inner bg-faded text-center rounded">
+    <form class="form" action="{% url 'reviews:review_creation' %}" method="post">
+        {% csrf_token %}
+        <label for="headline" class="">Titre</label>
+        <input type="text" name="headline" value="" id="headline">
+        <label for="rating" class="">Note</label>
+        <input type="number" name="rating" value="" id="rating">
+        <label for="body" class="">Commentaire</label>
+        <input type="text" name="body" value="" id="body">
+        <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
+        </br>
+        </br>
+        <button type="submit" class="">Envoyer</button>
+    </form>
+</div>
