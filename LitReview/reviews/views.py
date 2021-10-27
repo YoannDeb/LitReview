@@ -1,8 +1,8 @@
 from django.shortcuts import render
-# from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from .models import Review, Ticket, UserFollow
-from django.contrib.auth.models import User
 from itertools import chain
+from .forms import TicketResponseForm
 
 
 def index(request):
@@ -11,8 +11,8 @@ def index(request):
 
     followings = UserFollow.objects.filter(user=request.user)
     for following in followings:
-        tickets | Ticket.objects.filter(user=following.followed_user)
-        reviews | Review.objects.filter(user=following.followed_user)
+        tickets = tickets | Ticket.objects.filter(user=following.followed_user)
+        reviews = reviews | Review.objects.filter(user=following.followed_user)
 
     tickets_and_reviews = sorted(
         chain(tickets, reviews),
@@ -41,12 +41,35 @@ def ticket_creation(request):
     return render(request, 'reviews/ticket_creation', context)
 
 
-def review_creation(request):
+def ticket_response(request):
+    if request.method == 'POST' and request.POST.get('headline'):
+        form = TicketResponseForm(request.POST)
+        if form.is_valid():
+            # Create review in database from POST request
+            # headline = form.cleaned_data['headline']
+            # rating = form.cleaned_data['rating']
+            # body = form.cleaned_data['body']
+            # ticket = request.POST.get('ticket_id')
+            # user = request.user.id
+            review = Review(
+                headline=form.cleaned_data['headline'],
+                rating=form.cleaned_data['rating'],
+                body=form.cleaned_data['body'],
+                ticket=Ticket.objects.get(pk=request.POST.get('ticket_id')),
+                user=request.user
+            )
+            review.save()
+
+            return HttpResponseRedirect('/reviews/')
+    else:
+        form = TicketResponseForm()
+
     ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
     context = {
         'ticket': ticket,
+        'form': form,
     }
-    return render(request, 'reviews/review_creation.html', context)
+    return render(request, 'reviews/ticket_response.html', context)
 
 
 def user_follows(request):
