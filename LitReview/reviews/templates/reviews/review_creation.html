@@ -1,0 +1,16 @@
+{% extends 'reviews/base.html' %}
+{% block content %}
+    </br>
+    <section class="page-section cta text-center">
+        <h2>Créer une critique</h2>
+        </br>
+        </br>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-9 mx-auto">
+                    {% include 'reviews/review_creation_form.html' with ticket=ticket %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
