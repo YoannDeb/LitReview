@@ -1,0 +1,8 @@
+.formField ul {
+    list-style-type : none;
+}
+
+.formField li {
+    display : inline-block;
+    width : 16%;
+}
