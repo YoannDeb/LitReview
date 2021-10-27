@@ -1,9 +1,9 @@
 <div class="cta-inner bg-faded text-center rounded">
     <h2 class="section-heading mb-4">
         {% if request.user == ticket.user %}
-            <span class="section-heading-upper">Vous avez demandé une critique le {{ ticket.time_created }}</span>
+            <span class="section-heading-upper">Votre demande de critique du {{ ticket.time_created }}</span>
         {% else %}
-            <span class="section-heading-upper">{{ ticket.user }} a demandé une critique le {{ ticket.time_created }}</span>
+            <span class="section-heading-upper">Demande de critique de {{ ticket.user }} du {{ ticket.time_created }}</span>
         {% endif %}
         <span class="section-heading-lower">{{ ticket.title }}</span>
     </h2>
@@ -15,7 +15,11 @@
     <!--  If ticket showing on index page  -->
     {% if request.get_full_path == '/reviews/' %}
         {% if not ticket.review.all %}
-            <button>Soumettre une critique</button>
+            <form class="form" action="{% url 'reviews:review_creation' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
+                <button type="submit">Soumettre une critique</button>
+            </form>
         {% endif %}
     {% endif %}
 
