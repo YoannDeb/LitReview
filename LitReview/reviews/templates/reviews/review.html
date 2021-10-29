@@ -12,21 +12,28 @@
     <hr>
     <div class="cta-inner bg-faded text-center rounded">
         <h2 class="section-heading mb-4">
-            {% if request.user == review.user %}
+            {% if request.user == ticket.review.user %}
                 <span class="section-heading-upper">En réponse à votre ticket du {{ review.ticket.time_created }}</span>
             {% else %}
                 <span class="section-heading-upper">En réponse au ticket de {{ review.ticket.user }} du {{ review.ticket.time_created }}</span>
             {% endif %}
             <span class="section-heading-lower">{{ review.ticket.title }}</span>
         </h2>
-        <p>
-            <img src="{{ review.ticket.image.url }}" alt="">
-        </p>
+        {% if review.ticket.image %}
+            <p>
+                <img src="{{ review.ticket.image.url }}" alt="">
+            </p>
+        {% endif %}
     <hr>
     <!-- If review showing on my_posts page   -->
     {% if request.get_full_path == '/reviews/my_posts/' %}
         <button>Modifier</button>
-        <button>Supprimer</button>
+        <form class="form" action="{% url 'reviews:my_posts' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" class="hidden" value="{{ review.id }}" name="review_id">
+            <input type="hidden" class="hidden" value="review" name="to_delete">
+            <button type="submit">Supprimer</button>
+        </form>
     {% endif %}
 
     </div>
