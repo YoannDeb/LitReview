@@ -14,7 +14,6 @@
             <img src="{{ ticket.image.url }}" alt="">
         </p>
     {% endif %}
-    <!--  If ticket showing on index page  -->
     {% if request.get_full_path == '/reviews/' %}
         {% if ticket.review_set.count == 0 %}
             <form class="form" action="{% url 'reviews:ticket_response' %}" method="post">
@@ -34,5 +33,4 @@
             <button type="submit">Supprimer</button>
         </form>
     {% endif %}
-
 </div>
