@@ -21,4 +21,12 @@ class TicketCreationForm(forms.Form):
 
 
 class ReviewCreationForm(forms.Form):
-    pass
+    error_css_class = 'error'
+    required_css_class = 'required'
+    title = forms.CharField(label='Titre', max_length=128, widget=forms.TextInput(attrs={'size': '60'}))
+    description = forms.CharField(label='Description', max_length=2048, required=False, widget=forms.Textarea(attrs={'rows': '10', 'cols': '60'}))
+    image = forms.ImageField(label='Image', required=False)
+    headline = forms.CharField(label='Titre', max_length=128, widget=forms.TextInput(attrs={'size': '60'}))
+    rating = forms.ChoiceField(label='Note', widget=forms.RadioSelect, choices=RATINGS)
+    body = forms.CharField(label='Commentaire', max_length=8192, required=False,
+                           widget=forms.Textarea(attrs={'rows': '10', 'cols': '60'}))
