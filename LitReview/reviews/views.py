@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from .models import Review, Ticket, UserFollow
 from itertools import chain
-from .forms import TicketResponseForm, TicketCreationForm
+from .forms import TicketResponseForm, TicketCreationForm, ReviewCreationForm
 from django.views.generic.edit import DeleteView
 from django.shortcuts import redirect
 
@@ -33,10 +33,39 @@ def index(request):
 
 def my_posts(request):
     if request.method == 'POST':
+        if request.POST.get('role') == 'delete':
+            if request.POST.get('ticket_id'):
+                Ticket.objects.get(pk=request.POST.get('ticket_id')).delete()
+            if request.POST.get('review_id'):
+                Review.objects.get(pk=request.POST.get('review_id')).delete()
+
+    if request.POST.get('role') == 'modify':
         if request.POST.get('ticket_id'):
-            Ticket.objects.get(pk=request.POST.get('ticket_id')).delete()
+            ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+            data = {
+                'title': ticket.title,
+                'description': ticket.description,
+                'image': ticket.image
+            }
+            form = TicketCreationForm(initial=data)
+            context = {
+                'form': form,
+                'ticket_id': request.POST.get('ticket_id')
+            }
+            return render(request, 'reviews/ticket_creation.html', context)
+
         if request.POST.get('review_id'):
-            Review.objects.get(pk=request.POST.get('review_id')).delete()
+            review = Review.objects.get(pk=request.POST.get('review_id'))
+            data = {
+                'headline': review.headline,
+                'rating': review.rating,
+                'body': review.body
+            }
+            form = TicketResponseForm(initial=data)
+            context = {
+                'form': form,
+            }
+            return render(request, 'reviews/ticket_response.html', context)
 
     tickets = Ticket.objects.filter(user=request.user)
     reviews = Review.objects.filter(user=request.user)
@@ -58,16 +87,17 @@ class TicketDeleteView(DeleteView):
 def ticket_creation(request):
     if request.method == 'POST':
         form = TicketCreationForm(request.POST, request.FILES)
-        print(form['image'])
         if form.is_valid():
-            ticket = Ticket(
-                title=form.cleaned_data['title'],
-                description=form.cleaned_data['description'],
-                image=form.cleaned_data.get('image'),
-                user=request.user
-            )
-            print(form.cleaned_data.get('image'))
-            ticket.save()
+            if request.POST.get('ticket_id'):
+                pass  # fill with modification handler
+            else:
+                ticket = Ticket(
+                    title=form.cleaned_data['title'],
+                    description=form.cleaned_data['description'],
+                    image=form.cleaned_data.get('image'),
+                    user=request.user
+                )
+                ticket.save()
 
             return HttpResponseRedirect('/reviews/')
     else:
@@ -105,8 +135,34 @@ def ticket_response(request):
 
 
 def review_creation(request):
-    context = {}
-    return render(request, 'reviews/index.html', context)
+    if request.method == 'POST':
+        form = ReviewCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            ticket = Ticket(
+                title=form.cleaned_data['title'],
+                description=form.cleaned_data['description'],
+                image=form.cleaned_data.get('image'),
+                user=request.user
+            )
+            ticket.save()
+
+            review = Review(
+                headline=form.cleaned_data['headline'],
+                rating=form.cleaned_data['rating'],
+                body=form.cleaned_data['body'],
+                ticket=ticket,
+                user=request.user
+            )
+            review.save()
+
+            return HttpResponseRedirect('/reviews/')
+    else:
+        form = ReviewCreationForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'reviews/review_creation.html', context)
 
 
 def user_follows(request):
