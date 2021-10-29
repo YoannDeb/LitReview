@@ -9,12 +9,14 @@
     </h2>
     <p class="mb-0">{{ ticket.description }}</p>
     </br>
-    <p>
-        <img src="{{ ticket.image.url }}" alt="">
-    </p>
+    {% if ticket.image %}
+        <p>
+            <img src="{{ ticket.image.url }}" alt="">
+        </p>
+    {% endif %}
     <!--  If ticket showing on index page  -->
     {% if request.get_full_path == '/reviews/' %}
-        {% if not ticket.review.all %}
+        {% if ticket.review_set.count == 0 %}
             <form class="form" action="{% url 'reviews:ticket_response' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
@@ -26,7 +28,12 @@
     <!-- If ticket showing on my posts page   -->
     {% if request.get_full_path == '/reviews/my_posts/' %}
         <button>Modifier</button>
-        <button>Supprimer</button>
+        <form class="form" action="{% url 'reviews:my_posts' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
+            <input type="hidden" class="hidden" value="ticket" name="to_delete">
+            <button type="submit">Supprimer</button>
+        </form>
     {% endif %}
 
 </div>
