@@ -12,7 +12,7 @@
     <hr>
     <div class="cta-inner bg-faded text-center rounded">
         <h2 class="section-heading mb-4">
-            {% if request.user == ticket.review.user %}
+            {% if request.user == review.ticket.user %}
                 <span class="section-heading-upper">En réponse à votre ticket du {{ review.ticket.time_created }}</span>
             {% else %}
                 <span class="section-heading-upper">En réponse au ticket de {{ review.ticket.user }} du {{ review.ticket.time_created }}</span>
