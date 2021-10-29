@@ -25,7 +25,6 @@
             </p>
         {% endif %}
     <hr>
-    <!-- If review showing on my_posts page   -->
     {% if request.get_full_path == '/reviews/my_posts/' %}
         <button>Modifier</button>
         <form class="form" action="{% url 'reviews:my_posts' %}" method="post">
@@ -34,6 +33,5 @@
             <button type="submit">Supprimer</button>
         </form>
     {% endif %}
-
     </div>
 </div>
