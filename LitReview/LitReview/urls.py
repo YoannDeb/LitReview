@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from reviews.views import redirect_to_reviews_index
 
 urlpatterns = [
+    path('', redirect_to_reviews_index),
     path('reviews/', include('reviews.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
