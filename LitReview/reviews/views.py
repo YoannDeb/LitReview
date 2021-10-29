@@ -5,6 +5,12 @@ from .models import Review, Ticket, UserFollow
 from itertools import chain
 from .forms import TicketResponseForm, TicketCreationForm
 from django.views.generic.edit import DeleteView
+from django.shortcuts import redirect
+
+
+def redirect_to_reviews_index(request):
+    response = redirect('reviews:index')
+    return response
 
 
 def index(request):
