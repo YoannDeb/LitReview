@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+<div class="cta-inner bg-faded text-center rounded">
+    <form class="form" action="{% url 'reviews:ticket_creation' %}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+                <div class="formField">
+                    {{ field.errors }}
+                    {{ field.label_tag }}
+                    </br>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                </br>
+        {% endfor %}
+        <button type="submit" class="">Envoyer</button>
+    </form>
+</div>
