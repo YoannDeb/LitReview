@@ -13,7 +13,11 @@ class TicketResponseForm(forms.Form):
 
 
 class TicketCreationForm(forms.Form):
-    pass
+    error_css_class = 'error'
+    required_css_class = 'required'
+    title = forms.CharField(label='Titre', max_length=128, widget=forms.TextInput(attrs={'size': '60'}))
+    description = forms.CharField(label='Description', max_length=2048, required=False, widget=forms.Textarea(attrs={'rows': '10', 'cols': '60'}))
+    image = forms.ImageField(label='Image', required=False)
 
 
 class ReviewCreationForm(forms.Form):
