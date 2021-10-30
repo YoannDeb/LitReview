@@ -34,13 +34,31 @@ def index(request):
 def my_posts(request):
     if request.method == 'POST':
         if request.POST.get('role') == 'delete':
-            if request.POST.get('ticket_id'):
-                Ticket.objects.get(pk=request.POST.get('ticket_id')).delete()
             if request.POST.get('review_id'):
                 Review.objects.get(pk=request.POST.get('review_id')).delete()
+            elif request.POST.get('ticket_id'):
+                Ticket.objects.get(pk=request.POST.get('ticket_id')).delete()
 
-        if request.POST.get('role') == 'modify':
-            if request.POST.get('ticket_id'):
+        elif request.POST.get('role') == 'modify':
+            # checking 'review_id' presence first to recognize if it is a review,
+            # because both reviews and tickets POSTs returns a 'ticket_id' attribute
+            if request.POST.get('review_id'):
+                review = Review.objects.get(pk=request.POST.get('review_id'))
+                ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+                data = {
+                    'headline': review.headline,
+                    'rating': review.rating,
+                    'body': review.body
+                }
+                form = TicketResponseForm(initial=data)
+                context = {
+                    'review': review,
+                    'ticket': ticket,
+                    'form': form,
+                }
+                return render(request, 'reviews/ticket_response.html', context)
+
+            elif request.POST.get('ticket_id'):
                 ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
                 data = {
                     'title': ticket.title,
@@ -53,19 +71,6 @@ def my_posts(request):
                     'ticket': ticket
                 }
                 return render(request, 'reviews/ticket_creation.html', context)
-
-            if request.POST.get('review_id'):
-                review = Review.objects.get(pk=request.POST.get('review_id'))
-                data = {
-                    'headline': review.headline,
-                    'rating': review.rating,
-                    'body': review.body
-                }
-                form = TicketResponseForm(initial=data)
-                context = {
-                    'form': form,
-                }
-                return render(request, 'reviews/ticket_response.html', context)
 
     tickets = Ticket.objects.filter(user=request.user)
     reviews = Review.objects.filter(user=request.user)
@@ -94,7 +99,6 @@ def ticket_creation(request):
                 ticket.description = form.cleaned_data['description']
                 ticket.image = form.cleaned_data['image']
                 ticket.save()
-
                 return HttpResponseRedirect('/reviews/my_posts')
             else:
                 ticket = Ticket(
@@ -104,7 +108,6 @@ def ticket_creation(request):
                     user=request.user
                 )
                 ticket.save()
-
                 return HttpResponseRedirect('/reviews/')
     else:
         form = TicketCreationForm()
@@ -119,16 +122,23 @@ def ticket_response(request):
     if request.method == 'POST' and request.POST.get('headline'):
         form = TicketResponseForm(request.POST)
         if form.is_valid():
-            review = Review(
-                headline=form.cleaned_data['headline'],
-                rating=form.cleaned_data['rating'],
-                body=form.cleaned_data['body'],
-                ticket=Ticket.objects.get(pk=request.POST.get('ticket_id')),
-                user=request.user
-            )
-            review.save()
-
-            return HttpResponseRedirect('/reviews/')
+            if request.POST.get('review_id'):
+                review = Review.objects.get(pk=request.POST.get('review_id'))
+                review.headline = form.cleaned_data['headline']
+                review.rating = form.cleaned_data['rating']
+                review.body = form.cleaned_data['body']
+                review.save()
+                return HttpResponseRedirect('/reviews/my_posts')
+            else:
+                review = Review(
+                    headline=form.cleaned_data['headline'],
+                    rating=form.cleaned_data['rating'],
+                    body=form.cleaned_data['body'],
+                    ticket=Ticket.objects.get(pk=request.POST.get('ticket_id')),
+                    user=request.user
+                )
+                review.save()
+                return HttpResponseRedirect('/reviews/')
     else:
         form = TicketResponseForm()
 
