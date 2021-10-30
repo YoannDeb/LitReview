@@ -6,6 +6,7 @@
     <form class="form" action="{% url 'reviews:ticket_response' %}" method="post">
         {% csrf_token %}
         <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
+        <input type="hidden" class="hidden" value="{{ review.id }}" name="review_id">
         {% for field in form %}
                 <div class="formField">
                     {{ field.errors }}
