@@ -1,7 +1,7 @@
 <div class="cta-inner bg-faded text-center rounded">
     <form class="form" action="{% url 'reviews:ticket_creation' %}" method="post" enctype="multipart/form-data">
-        <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
         {% csrf_token %}
+        <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
         {% for field in form %}
                 <div class="formField">
                     {{ field.errors }}
