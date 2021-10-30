@@ -2,7 +2,11 @@
 {% block content %}
     </br>
     <section class="page-section cta text-center">
-        <h2>Créer un ticket</h2>
+        {% if ticket %}
+            <h2>Modifier votre ticket du {{ ticket.time_created }}</h2>
+        {% else %}
+            <h2>Créer un ticket</h2>
+        {% endif %}
         </br>
         <div class="container">
             <div class="row">
