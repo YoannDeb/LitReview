@@ -39,33 +39,33 @@ def my_posts(request):
             if request.POST.get('review_id'):
                 Review.objects.get(pk=request.POST.get('review_id')).delete()
 
-    if request.POST.get('role') == 'modify':
-        if request.POST.get('ticket_id'):
-            ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
-            data = {
-                'title': ticket.title,
-                'description': ticket.description,
-                'image': ticket.image
-            }
-            form = TicketCreationForm(initial=data)
-            context = {
-                'form': form,
-                'ticket_id': request.POST.get('ticket_id')
-            }
-            return render(request, 'reviews/ticket_creation.html', context)
+        if request.POST.get('role') == 'modify':
+            if request.POST.get('ticket_id'):
+                ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+                data = {
+                    'title': ticket.title,
+                    'description': ticket.description,
+                    'image': ticket.image
+                }
+                form = TicketCreationForm(initial=data)
+                context = {
+                    'form': form,
+                    'ticket': ticket
+                }
+                return render(request, 'reviews/ticket_creation.html', context)
 
-        if request.POST.get('review_id'):
-            review = Review.objects.get(pk=request.POST.get('review_id'))
-            data = {
-                'headline': review.headline,
-                'rating': review.rating,
-                'body': review.body
-            }
-            form = TicketResponseForm(initial=data)
-            context = {
-                'form': form,
-            }
-            return render(request, 'reviews/ticket_response.html', context)
+            if request.POST.get('review_id'):
+                review = Review.objects.get(pk=request.POST.get('review_id'))
+                data = {
+                    'headline': review.headline,
+                    'rating': review.rating,
+                    'body': review.body
+                }
+                form = TicketResponseForm(initial=data)
+                context = {
+                    'form': form,
+                }
+                return render(request, 'reviews/ticket_response.html', context)
 
     tickets = Ticket.objects.filter(user=request.user)
     reviews = Review.objects.filter(user=request.user)
@@ -89,17 +89,23 @@ def ticket_creation(request):
         form = TicketCreationForm(request.POST, request.FILES)
         if form.is_valid():
             if request.POST.get('ticket_id'):
-                pass  # fill with modification handler
+                ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+                ticket.title = form.cleaned_data['title']
+                ticket.description = form.cleaned_data['description']
+                ticket.image = form.cleaned_data['image']
+                ticket.save()
+
+                return HttpResponseRedirect('/reviews/my_posts')
             else:
                 ticket = Ticket(
                     title=form.cleaned_data['title'],
                     description=form.cleaned_data['description'],
-                    image=form.cleaned_data.get('image'),
+                    image=form.cleaned_data['image'],
                     user=request.user
                 )
                 ticket.save()
 
-            return HttpResponseRedirect('/reviews/')
+                return HttpResponseRedirect('/reviews/')
     else:
         form = TicketCreationForm()
 
