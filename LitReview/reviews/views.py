@@ -119,7 +119,8 @@ def ticket_creation(request):
 
 
 def ticket_response(request):
-    if request.method == 'POST' and request.POST.get('headline'):
+    # if request.method == 'POST' and request.POST.get('headline'): (old condition, don't know why anymore...)
+    if request.method == 'POST':
         form = TicketResponseForm(request.POST)
         if form.is_valid():
             if request.POST.get('review_id'):
