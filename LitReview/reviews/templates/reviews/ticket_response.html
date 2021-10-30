@@ -2,8 +2,11 @@
 {% block content %}
     </br>
     <section class="page-section cta text-center">
-        <h2>Créer une critique</h2>
-        </br>
+        {% if review %}
+            <h2>Modifier votre critique du {{ review.time_created }}</h2>
+        {% else %}
+            <h2>Créer une critique</h2>
+        {% endif %}
         </br>
         <div class="container">
             <div class="row">
