@@ -34,7 +34,7 @@
                         <li class="nav-item px-lg-4"><a class="nav-link text-uppercase" href="{% url 'reviews:index' %}">Flux</a></li>
                         <li class="nav-item px-lg-4"><a class="nav-link text-uppercase" href="{% url 'reviews:my_posts' %}">Mes posts</a></li>
                         <li class="nav-item px-lg-4"><a class="nav-link text-uppercase" href="{% url 'reviews:user_follows' %}">Abonnements</a></li>
-                        <li class="nav-item px-lg-4"><a class="nav-link text-uppercase" href="{% url 'reviews:index' %}">Se déconnecter</a></li>
+                        <li class="nav-item px-lg-4"><a class="nav-link text-uppercase" href="{% url 'reviews:logout' %}">Se déconnecter du compte {{ request.user }}</a></li>
                     </ul>
                 </div>
             </div>
