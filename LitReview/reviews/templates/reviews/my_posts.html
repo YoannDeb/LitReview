@@ -14,6 +14,13 @@
                         {% else %}
                             {% include 'reviews/review.html' with review=ticket_or_review %}
                         {% endif %}
+                    {% empty %}
+                        <hr>
+                        <h2>Vous n'avez encore rien posté...</h2>
+                        </br>
+                        </br>
+                        <a href="{% url 'reviews:ticket_creation' %}"><button>Demander une critique</button></a>
+                        <a href="{% url 'reviews:review_creation' %}"><button>Créer une critique</button></a>
                     {% endfor %}
                 </div>
             </div>
