@@ -16,6 +16,8 @@
                         {% else %}
                             {% include 'reviews/review.html' with review=ticket_or_review %}
                         {% endif %}
+                    {% empty %}
+                    <h2>Pas de critique à afficher, abonnez-vous à des utilisateurs pour voir leurs critiques !</h2>
                     {% endfor %}
                 </div>
             </div>
