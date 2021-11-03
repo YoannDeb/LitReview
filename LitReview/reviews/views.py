@@ -6,6 +6,9 @@ from itertools import chain
 from .forms import TicketResponseForm, TicketCreationForm, ReviewCreationForm
 from django.views.generic.edit import DeleteView
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 
 def redirect_to_reviews_index(request):
@@ -13,6 +16,7 @@ def redirect_to_reviews_index(request):
     return response
 
 
+@login_required(login_url='reviews:login')
 def index(request):
     tickets = Ticket.objects.filter(user=request.user)
     reviews = Review.objects.filter(user=request.user)
@@ -24,13 +28,14 @@ def index(request):
 
     tickets_and_reviews = sorted(
         chain(tickets, reviews),
-        key=lambda x: x.time_created, reverse=True)[:10]
+        key=lambda x: x.time_created, reverse=True)
     context = {
         'tickets_and_reviews': tickets_and_reviews
     }
     return render(request, 'reviews/index.html', context)
 
 
+@login_required(login_url='reviews:login')
 def my_posts(request):
     if request.method == 'POST':
         if request.POST.get('role') == 'delete':
@@ -89,6 +94,7 @@ class TicketDeleteView(DeleteView):
     success_url = reverse_lazy('reviews:my_posts')
 
 
+@login_required(login_url='reviews:login')
 def ticket_creation(request):
     if request.method == 'POST':
         form = TicketCreationForm(request.POST, request.FILES)
@@ -118,39 +124,44 @@ def ticket_creation(request):
     return render(request, 'reviews/ticket_creation.html', context)
 
 
+@login_required(login_url='reviews:login')
 def ticket_response(request):
     # if request.method == 'POST' and request.POST.get('headline'): (old condition, don't know why anymore...)
-    if request.method == 'POST':
-        form = TicketResponseForm(request.POST)
-        if form.is_valid():
-            if request.POST.get('review_id'):
-                review = Review.objects.get(pk=request.POST.get('review_id'))
-                review.headline = form.cleaned_data['headline']
-                review.rating = form.cleaned_data['rating']
-                review.body = form.cleaned_data['body']
-                review.save()
-                return HttpResponseRedirect('/reviews/my_posts')
-            else:
-                review = Review(
-                    headline=form.cleaned_data['headline'],
-                    rating=form.cleaned_data['rating'],
-                    body=form.cleaned_data['body'],
-                    ticket=Ticket.objects.get(pk=request.POST.get('ticket_id')),
-                    user=request.user
-                )
-                review.save()
-                return HttpResponseRedirect('/reviews/')
+    if request.POST.get('ticket_id'):
+        if request.method == 'POST':
+            form = TicketResponseForm(request.POST)
+            if form.is_valid():
+                if request.POST.get('review_id'):
+                    review = Review.objects.get(pk=request.POST.get('review_id'))
+                    review.headline = form.cleaned_data['headline']
+                    review.rating = form.cleaned_data['rating']
+                    review.body = form.cleaned_data['body']
+                    review.save()
+                    return HttpResponseRedirect('/reviews/my_posts')
+                else:
+                    review = Review(
+                        headline=form.cleaned_data['headline'],
+                        rating=form.cleaned_data['rating'],
+                        body=form.cleaned_data['body'],
+                        ticket=Ticket.objects.get(pk=request.POST.get('ticket_id')),
+                        user=request.user
+                    )
+                    review.save()
+                    return HttpResponseRedirect('/reviews/')
+        else:
+            form = TicketResponseForm()
+
+        ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+        context = {
+            'ticket': ticket,
+            'form': form,
+        }
+        return render(request, 'reviews/ticket_response.html', context)
     else:
-        form = TicketResponseForm()
-
-    ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
-    context = {
-        'ticket': ticket,
-        'form': form,
-    }
-    return render(request, 'reviews/ticket_response.html', context)
+        return HttpResponseRedirect('/reviews/')
 
 
+@login_required(login_url='reviews:login')
 def review_creation(request):
     if request.method == 'POST':
         form = ReviewCreationForm(request.POST, request.FILES)
@@ -182,15 +193,25 @@ def review_creation(request):
     return render(request, 'reviews/review_creation.html', context)
 
 
+@login_required(login_url='reviews:login')
 def user_follows(request):
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
-    if not followings:
-        followings = ["Vous n'avez pas encore d'abonnements"]
-    if not followed_bys:
-        followed_bys = ["Personne ne s'est encore abonné"]
     context = {
         'followings': followings,
         'followed_bys': followed_bys
     }
     return render(request, 'reviews/user_follows.html', context)
+
+
+def user_creation(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return HttpResponseRedirect('/reviews/')
+    else:
+        form = UserCreationForm()
+    context = {'form': form}
+    return render(request, 'registration/signup.html', context)
