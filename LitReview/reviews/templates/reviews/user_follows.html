@@ -6,35 +6,103 @@
         <section class="page-section cta text-center">
             <h1>Suivre d'autres utilisateurs</h1>
             </br>
-            <a href="{% url 'reviews:index' %}"><button>Envoyer</button></a>
+            <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <input type="hidden" class="hidden" value="search" name="role">
+                <button type="submit">Rechercher</button>
+            </form>
             </br>
+            <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" class="hidden" value="search_all" name="role">
+                <button type="submit">Montrer tous les utilisateurs auxquels je ne suis pas déjà abonné</button>
+            </form>
             </br>
+            <h2>{{ search_message }}</h2>
             <div class="container">
                 <div class="row">
                     <div class="col-xl-9 mx-auto">
+                        {% if search_matches %}
+                            <div class="cta-inner bg-faded text-center rounded">
+                                <h2 class="section-heading mb-4">
+                                    <span class="section-heading-lower">Résultats de la recherche</span>
+                                </h2>
+                                <table>
+                                    {% for user in search_matches %}
+                                    <tr>
+                                        <td>
+                                            <span class="section-heading-upper">{{ user.username }}</span>
+                                        </td>
+                                        {% if user not in followed_users %}
+                                        <td>
+                                            <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" class="hidden" value="add" name="role">
+                                                <input type="hidden" class="hidden" value="{{ user.id }}" name="user_to_follow_id">
+                                                <button type="submit">Ajouter à mes abonnements</button>
+                                            </form>
+                                        </td>
+                                        {% else %}
+                                        <td>
+                                            <button disabled="true">Déjà dans mes abonnements</button>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        {% endif %}
                         <div class="cta-inner bg-faded text-center rounded">
                             <h2 class="section-heading mb-4">
                                 <span class="section-heading-lower">Abonnements</span>
-                                </br>
+                            </h2>
+                            <table>
                                 {% for following in followings %}
-                                    <span class="section-heading-upper">{{ following.followed_user }}</span>
+                                <tr class="user_table">
+                                    <td class="user_table">
+                                        <span class="section-heading-upper">{{ following.followed_user }}</span>
+                                    </td>
+                                    <td class="user_table">
+                                        <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" class="hidden" value="delete" name="role">
+                                            <input type="hidden" class="hidden" value="{{ following.id }}" name="following_id">
+                                            <button type="submit">Se désabonner</button>
+                                        </form>
+                                    </td>
+                                </tr>
                                 {% empty %}
                                     <span class="section-heading-upper">Vous n'êtes encore abonné à personne</span>
                                 {% endfor %}
-                            </h2>
+                            </table>
                         </div>
                         <div class="cta-inner bg-faded text-center rounded">
                             <h2 class="section-heading mb-4">
                                 <span class="section-heading-lower">Abonnés</span>
-                                </br>
+                            </h2>
+                            <table>
                                 {% for followed_by in followed_bys %}
-                                    <span class="section-heading-upper">{{ followed_by.user }}</span>
+                                <tr>
+                                    <td>
+                                        <span class="section-heading-upper">{{ followed_by.user }}</span>
+                                    </td>
+                                    {% if followed_by.user not in followed_users %}
+                                    <td>
+                                        <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" class="hidden" value="add" name="role">
+                                            <input type="hidden" class="hidden" value="{{ followed_by.user.id }}" name="user_to_follow_id">
+                                            <button type="submit">Ajouter à mes abonnements</button>
+                                        </form>
+                                    </td>
+                                    {% endif %}
+                                </tr>
                                 {% empty %}
                                     <span class="section-heading-upper">Personne ne vous suit ;-(</span>
                                 {% endfor %}
-                            </h2>
+                            </table>
                         </div>
-
                     </div>
                 </div>
             </div>
