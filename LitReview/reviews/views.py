@@ -3,11 +3,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from .models import Review, Ticket, UserFollow
 from itertools import chain
-from .forms import TicketResponseForm, TicketCreationForm, ReviewCreationForm
+from .forms import TicketResponseForm, TicketCreationForm, ReviewCreationForm, UserSearchForm
 from django.views.generic.edit import DeleteView
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.auth import login
 
 
@@ -195,21 +196,61 @@ def review_creation(request):
 
 @login_required(login_url='reviews:login')
 def user_follows(request):
+    form = UserSearchForm()
+    search_matches = []
+    search_message = ''
     if request.method == 'POST':
-        if request.POST.get('func') == 'search':
-            # Do and show search results
-            pass
-        elif request.POST.get('func') == 'delete':
-            # delete follow
-            pass
-        elif request.POST.get('func') == 'add':
-            # add follow
-            pass
+        if request.POST.get('role') == 'search':
+            form = UserSearchForm(request.POST)
+            if form.is_valid():
+                username_searched = form.cleaned_data['username_searched']
+                if User.objects.filter(username=username_searched):
+                    user_to_follow = get_object_or_404(User, username=username_searched)
+                    if user_to_follow == request.user:
+                        search_message = f"Vous ne pouvez pas vous abonner à vous-même !"
+                    elif UserFollow.objects.filter(user=request.user, followed_user=user_to_follow):
+                        search_message = f"Vous êtes déjà abonnée à {user_to_follow}"
+                    else:
+                        new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
+                        new_follow.save()
+                        search_message = f"Vous êtes maintenant abonné à {user_to_follow}"
+                else:
+                    search_matches = User.objects.filter(username__icontains=username_searched)  #  exclude request.user
+                    if not search_matches:
+                        search_message = "Aucun utilisateur ne correspond à cette recherche"
+
+        elif request.POST.get('role') == 'search_all':
+            unwanted = User.objects.filter(followed_by__user=request.user) | User.objects.filter(pk=request.user.pk)
+            search_matches = User.objects.exclude(pk__in=[user.pk for user in unwanted])
+            if not search_matches:
+                if len(unwanted) == 1:
+                    search_message = "Vous êtes le seul utilisateur de LITReview !"
+                else:
+                    search_message = "Vous êtes déjà abonné a tous les utilisateurs"
+        elif request.POST.get('role') == 'delete':
+            following_id = request.POST.get('following_id')
+            follow_to_delete = get_object_or_404(UserFollow, pk=following_id)
+            user_to_unfollow = follow_to_delete.followed_user.username
+            follow_to_delete.delete()
+            search_message = f"{ user_to_unfollow } ne fait plus partie de votre liste d'abonnements"
+        elif request.POST.get('role') == 'add':
+            user_to_follow = get_object_or_404(User, pk=request.POST.get('user_to_follow_id'))
+            new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
+            new_follow.save()
+            search_message = f"Vous êtes maintenant abonné à {user_to_follow}"
+
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
+    followed_users = []
+    for following in followings:
+        followed_users.append(following.followed_user)
     context = {
+        'form': form,
         'followings': followings,
-        'followed_bys': followed_bys
+        'followed_bys': followed_bys,
+        'followed_users': followed_users,
+        'search_matches': search_matches,
+        'search_message': search_message
     }
     return render(request, 'reviews/user_follows.html', context)
 
