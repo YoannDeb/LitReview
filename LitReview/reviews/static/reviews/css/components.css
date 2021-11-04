@@ -6,3 +6,15 @@
     display : inline-block;
     width : 16%;
 }
+
+.user_table table {
+    margin: auto;
+}
+
+.user_table td {
+    text-align: center;
+}
+
+.checked {
+  color: orange;
+}
