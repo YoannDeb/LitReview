@@ -4,9 +4,6 @@
     <div class="container">
         <div class="row">
             <div class="col-xl-9 mx-auto">
-<!--                {% if form.errors %}-->
-<!--                    <p>Nom d'utilisateur et/ou mot de passe incorrect(s). Veuillez renseigner à nouveau vos identifiants.</p>-->
-<!--                {% endif %}-->
                 <form class="form" action="{% url 'reviews:signup' %}" method="post">
                     {% csrf_token %}
                     </br>
@@ -23,7 +20,7 @@
                             </br>
                     {% endfor %}
                     <input type="hidden" name="next" value="{{ next }}">
-                    <button type="submit" class="">Se connecter</button>
+                    <button type="submit" class="">S'inscrire</button>
                     </br>
                     </br>
                 </form>
