@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy, gettext as _
+from django_resized import ResizedImageField
 
 
 class Ticket(models.Model):
@@ -10,7 +11,7 @@ class Ticket(models.Model):
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
-    image = models.ImageField(null=True, blank=True, upload_to='book_covers')
+    image = ResizedImageField(size=[200, 300], quality=100, force_format='JPEG', null=True, blank=True, upload_to='book_covers')
     time_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
