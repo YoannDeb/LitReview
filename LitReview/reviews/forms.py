@@ -30,3 +30,9 @@ class ReviewCreationForm(forms.Form):
     rating = forms.ChoiceField(label='Note', widget=forms.RadioSelect, choices=RATINGS)
     body = forms.CharField(label='Commentaire', max_length=8192, required=False,
                            widget=forms.Textarea(attrs={'rows': '10', 'cols': '60'}))
+
+
+class UserSearchForm(forms.Form):
+    error_css_class = 'error'
+    required_css_class = 'required'
+    username_searched = forms.CharField(label='', max_length=150, widget=forms.TextInput(attrs={'size': '60'}))
