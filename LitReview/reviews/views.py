@@ -30,14 +30,17 @@ def index(request):
     tickets_and_reviews = sorted(
         chain(tickets, reviews),
         key=lambda x: x.time_created, reverse=True)
+    star_count = [0, 1, 2, 3, 4]
     context = {
-        'tickets_and_reviews': tickets_and_reviews
+        'tickets_and_reviews': tickets_and_reviews,
+        'star_count': star_count
     }
     return render(request, 'reviews/index.html', context)
 
 
 @login_required(login_url='reviews:login')
 def my_posts(request):
+    star_count = [0, 1, 2, 3, 4]
     if request.method == 'POST':
         if request.POST.get('role') == 'delete':
             if request.POST.get('review_id'):
@@ -72,9 +75,10 @@ def my_posts(request):
                     'image': ticket.image
                 }
                 form = TicketCreationForm(initial=data)
+
                 context = {
                     'form': form,
-                    'ticket': ticket
+                    'ticket': ticket,
                 }
                 return render(request, 'reviews/ticket_creation.html', context)
 
@@ -85,7 +89,8 @@ def my_posts(request):
         chain(tickets, reviews),
         key=lambda x: x.time_created, reverse=True)
     context = {
-        'tickets_and_reviews': tickets_and_reviews
+        'tickets_and_reviews': tickets_and_reviews,
+        'star_count': star_count
     }
     return render(request, 'reviews/my_posts.html', context)
 
@@ -127,8 +132,6 @@ def ticket_creation(request):
 
 @login_required(login_url='reviews:login')
 def ticket_response(request):
-    # if request.method == 'POST' and request.POST.get('headline'): (old condition, don't know why anymore...)
-    # try:
     if request.method == 'POST':
         form = TicketResponseForm(request.POST)
         if form.is_valid():
@@ -158,8 +161,6 @@ def ticket_response(request):
         'form': form,
     }
     return render(request, 'reviews/ticket_response.html', context)
-    # except:
-    #     return HttpResponseRedirect('/reviews/')
 
 
 @login_required(login_url='reviews:login')
@@ -215,15 +216,16 @@ def user_follows(request):
                         new_follow.save()
                         search_message = f"Vous êtes maintenant abonné à {user_to_follow}"
                 else:
-                    search_matches = User.objects.filter(username__icontains=username_searched)  #  exclude request.user
+                    search_matches = User.objects.filter(username__icontains=username_searched).exclude(pk=request.user.pk)
                     if not search_matches:
                         search_message = "Aucun utilisateur ne correspond à cette recherche"
 
         elif request.POST.get('role') == 'search_all':
-            unwanted = User.objects.filter(followed_by__user=request.user) | User.objects.filter(pk=request.user.pk)
-            search_matches = User.objects.exclude(pk__in=[user.pk for user in unwanted])
+            # unwanted = User.objects.filter(followed_by__user=request.user) | User.objects.filter(pk=request.user.pk)
+            # search_matches = User.objects.exclude(pk__in=[user.pk for user in unwanted])
+            search_matches = User.objects.exclude(followed_by__user=request.user).exclude(pk=request.user.pk)
             if not search_matches:
-                if len(unwanted) == 1:
+                if len(User.objects.all()) == 1:
                     search_message = "Vous êtes le seul utilisateur de LITReview !"
                 else:
                     search_message = "Vous êtes déjà abonné a tous les utilisateurs"
