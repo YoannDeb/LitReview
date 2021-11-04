@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from .models import Review, Ticket, UserFollow
@@ -40,16 +40,16 @@ def my_posts(request):
     if request.method == 'POST':
         if request.POST.get('role') == 'delete':
             if request.POST.get('review_id'):
-                Review.objects.get(pk=request.POST.get('review_id')).delete()
+                get_object_or_404(Review, pk=request.POST.get('review_id')).delete()
             elif request.POST.get('ticket_id'):
-                Ticket.objects.get(pk=request.POST.get('ticket_id')).delete()
+                get_object_or_404(Ticket, pk=request.POST.get('ticket_id')).delete()
 
         elif request.POST.get('role') == 'modify':
             # checking 'review_id' presence first to recognize if it is a review,
             # because both reviews and tickets POSTs returns a 'ticket_id' attribute
             if request.POST.get('review_id'):
-                review = Review.objects.get(pk=request.POST.get('review_id'))
-                ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+                review = get_object_or_404(Review, pk=request.POST.get('review_id'))
+                ticket = get_object_or_404(Ticket, pk=request.POST.get('ticket_id'))
                 data = {
                     'headline': review.headline,
                     'rating': review.rating,
@@ -64,7 +64,7 @@ def my_posts(request):
                 return render(request, 'reviews/ticket_response.html', context)
 
             elif request.POST.get('ticket_id'):
-                ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+                ticket = get_object_or_404(Ticket, pk=request.POST.get('ticket_id'))
                 data = {
                     'title': ticket.title,
                     'description': ticket.description,
@@ -100,7 +100,7 @@ def ticket_creation(request):
         form = TicketCreationForm(request.POST, request.FILES)
         if form.is_valid():
             if request.POST.get('ticket_id'):
-                ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
+                ticket = get_object_or_404(Ticket, pk=request.POST.get('ticket_id'))
                 ticket.title = form.cleaned_data['title']
                 ticket.description = form.cleaned_data['description']
                 ticket.image = form.cleaned_data['image']
@@ -127,38 +127,38 @@ def ticket_creation(request):
 @login_required(login_url='reviews:login')
 def ticket_response(request):
     # if request.method == 'POST' and request.POST.get('headline'): (old condition, don't know why anymore...)
-    try:
-        if request.method == 'POST':
-            form = TicketResponseForm(request.POST)
-            if form.is_valid():
-                if request.POST.get('review_id'):
-                    review = Review.objects.get(pk=request.POST.get('review_id'))
-                    review.headline = form.cleaned_data['headline']
-                    review.rating = form.cleaned_data['rating']
-                    review.body = form.cleaned_data['body']
-                    review.save()
-                    return HttpResponseRedirect('/reviews/my_posts')
-                else:
-                    review = Review(
-                        headline=form.cleaned_data['headline'],
-                        rating=form.cleaned_data['rating'],
-                        body=form.cleaned_data['body'],
-                        ticket=Ticket.objects.get(pk=request.POST.get('ticket_id')),
-                        user=request.user
-                    )
-                    review.save()
-                    return HttpResponseRedirect('/reviews/')
-        else:
-            form = TicketResponseForm()
+    # try:
+    if request.method == 'POST':
+        form = TicketResponseForm(request.POST)
+        if form.is_valid():
+            if request.POST.get('review_id'):
+                review = get_object_or_404(Review, pk=request.POST.get('review_id'))
+                review.headline = form.cleaned_data['headline']
+                review.rating = form.cleaned_data['rating']
+                review.body = form.cleaned_data['body']
+                review.save()
+                return HttpResponseRedirect('/reviews/my_posts')
+            else:
+                review = Review(
+                    headline=form.cleaned_data['headline'],
+                    rating=form.cleaned_data['rating'],
+                    body=form.cleaned_data['body'],
+                    ticket=get_object_or_404(Ticket, pk=request.POST.get('ticket_id')),
+                    user=request.user
+                )
+                review.save()
+                return HttpResponseRedirect('/reviews/')
+    else:
+        form = TicketResponseForm()
 
-        ticket = Ticket.objects.get(pk=request.POST.get('ticket_id'))
-        context = {
-            'ticket': ticket,
-            'form': form,
-        }
-        return render(request, 'reviews/ticket_response.html', context)
-    except:
-        return HttpResponseRedirect('/reviews/')
+    ticket = get_object_or_404(Ticket, pk=request.POST.get('ticket_id'))
+    context = {
+        'ticket': ticket,
+        'form': form,
+    }
+    return render(request, 'reviews/ticket_response.html', context)
+    # except:
+    #     return HttpResponseRedirect('/reviews/')
 
 
 @login_required(login_url='reviews:login')
@@ -195,6 +195,16 @@ def review_creation(request):
 
 @login_required(login_url='reviews:login')
 def user_follows(request):
+    if request.method == 'POST':
+        if request.POST.get('func') == 'search':
+            # Do and show search results
+            pass
+        elif request.POST.get('func') == 'delete':
+            # delete follow
+            pass
+        elif request.POST.get('func') == 'add':
+            # add follow
+            pass
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
     context = {
