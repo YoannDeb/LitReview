@@ -6,7 +6,14 @@
             <span class="section-heading-upper">Critique de {{ review.user }} du {{ review.time_created }}</span>
         {% endif %}
         <span class="section-heading-lower">{{ review.headline }}</span>
-        <p>{{ review.rating }} étoiles</p>
+        {% for i in star_count %}
+            {% if review.rating > i %}
+                <span class="fa fa-star checked"></span>
+            {% else %}
+                <span class="fa fa-star"></span>
+            {% endif %}
+        {% endfor %}
+
     </h2>
     <p class="mb-0">{{ review.body }}</p>
     <hr>
