@@ -7,7 +7,12 @@
                     {{ field.errors }}
                     {{ field.label_tag }}
                     </br>
-                    {{ field }}
+                    <p>
+                        {% if field.label == "Image" and ticket.image %}
+                            <img src="{{ ticket.image.url }}" alt="" width="100">
+                        {% endif %}
+                        {{ field }}
+                    </p>
                     {% if field.help_text %}
                         <p class="help">{{ field.help_text|safe }}</p>
                     {% endif %}
