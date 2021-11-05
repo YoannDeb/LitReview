@@ -11,7 +11,7 @@
     </br>
     {% if ticket.image %}
         <p>
-            <img src="{{ ticket.image.url }}" alt="">
+            <img src="{{ ticket.image.url }}" alt="" height="300">
         </p>
     {% endif %}
     {% if request.get_full_path == '/reviews/' %}
