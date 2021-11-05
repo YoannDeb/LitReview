@@ -11,5 +11,7 @@ urlpatterns = [
     path('review_creation/', views.review_creation, name='review_creation'),
     path('user_follows/', views.user_follows, name='user_follows'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('signup/', views.user_creation, name='signup')
+    path('signup/', views.user_creation, name='signup'),
+    path('delete/<int:pk>', views.TicketDeleteView.as_view(), name='delete'),
+    path('success/', views.success, name='success')
 ]
