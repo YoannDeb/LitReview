@@ -100,6 +100,10 @@ class TicketDeleteView(DeleteView):
     success_url = reverse_lazy('reviews:my_posts')
 
 
+def success(request):
+    pass
+
+
 @login_required(login_url='reviews:login')
 def ticket_creation(request):
     if request.method == 'POST':
