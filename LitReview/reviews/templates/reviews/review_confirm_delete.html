@@ -1,4 +1,19 @@
-<form method="post">{% csrf_token %}
-    <p>Êtes vous sûr de vouloir supprimer le ticket : "{{ object }}"?</p>
-    <input type="submit" value="Confirm">
-</form>
+{% extends 'reviews/base.html' %}
+{% block content %}
+<div class="cta-inner bg-faded text-center rounded">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+                </br>
+                <form method="post">{% csrf_token %}
+                    <h2>Êtes vous sûr de vouloir supprimer votre critique : "{{ object }}" ?</h2>
+                    <button type="submit" value="Confirm">Confirmer</button>
+                </form>
+                <a href="{% url 'reviews:my_posts' %}"><button>Annuler</button></a>
+                </br>
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
