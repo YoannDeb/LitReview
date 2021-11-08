@@ -1,0 +1,19 @@
+{% extends 'reviews/base.html' %}
+{% block content %}
+<div class="cta-inner bg-faded text-center rounded">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+                </br>
+                <form method="post">{% csrf_token %}
+                    <h2>Êtes vous sûr de vouloir supprimer votre abonnement à {{ object.followed_user }} ?</h2>
+                    <button type="submit" value="Confirm">Confirmer</button>
+                </form>
+                <a href="{% url 'reviews:user_follows' %}"><button>Annuler</button></a>
+                </br>
+                </br>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
