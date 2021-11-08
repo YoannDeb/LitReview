@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from .models import Review, Ticket, UserFollow
 from itertools import chain
@@ -10,11 +10,80 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib import messages
 
 
 def redirect_to_reviews_index(request):
     response = redirect('reviews:index')
     return response
+
+
+class TicketDeleteView(DeleteView):
+    # def get_object(self, queryset=None):
+    #     """ Hook to ensure object is owned by request.user. """
+    #     obj = super(TicketDeleteView, self).get_object()
+    #     if not obj.user == self.request.user:
+    #         raise Http404
+    model = Ticket
+    success_url = reverse_lazy('reviews:my_posts')
+
+
+class ReviewDeleteView(DeleteView):
+    # def get_object(self, queryset=None):
+    #     """ Hook to ensure object is owned by request.user. """
+    #     obj = super(ReviewDeleteView, self).get_object()
+    #     if not obj.user == self.request.user:
+    #         raise Http404
+    model = Review
+    success_url = reverse_lazy('reviews:my_posts')
+
+
+class UserFollowDeleteView(DeleteView):
+    # def get_object(self, queryset=None):
+    #     """ Hook to ensure object is owned by request.user. """
+    #     obj = super(UserFollowDeleteView, self).get_object()
+    #     if not obj.user == self.request.user:
+    #         raise Http404
+    model = UserFollow
+    success_url = reverse_lazy('reviews:user_follows')
+
+
+# class TicketDeleteView(DeleteView):
+#     model = Ticket
+#     success_url = reverse_lazy('reviews:my_posts')
+#
+#     def get_object(self, queryset=None):
+#         """ Hook to ensure object is owned by request.user. """
+#         obj = super(TicketDeleteView, self).get_object()
+#         if not obj.user == self.request.user:
+#             raise Http404
+#
+#
+# class ReviewDeleteView(DeleteView):
+#     model = Review
+#     success_url = reverse_lazy('reviews:my_posts')
+#
+#     def get_object(self, queryset=None):
+#         """ Hook to ensure object is owned by request.user. """
+#         obj = super(ReviewDeleteView, self).get_object()
+#         if not obj.user == self.request.user:
+#             raise Http404
+#
+#
+# class UserFollowDeleteView(DeleteView):
+#     model = UserFollow
+#     success_url = reverse_lazy('reviews:user_follows')
+#
+#     def get_object(self, queryset=None):
+#         """ Hook to ensure object is owned by request.user. """
+#         obj = super(UserFollowDeleteView, self).get_object()
+#         if not obj.user == self.request.user:
+#             raise Http404
+
+    # def delete(self, request, *args, **kwargs):
+    #     # obj = self.get_object()
+    #     messages.success(self.request, " ne fait plus partie de votre liste d'abonnements")
+    #     return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
 
 
 @login_required(login_url='reviews:login')
@@ -44,9 +113,9 @@ def my_posts(request):
     if request.method == 'POST':
         if request.POST.get('role') == 'delete':
             if request.POST.get('review_id'):
-                get_object_or_404(Review, pk=request.POST.get('review_id')).delete()
+                return redirect(f"/reviews/delete_review/{request.POST.get('review_id')}")
             elif request.POST.get('ticket_id'):
-                get_object_or_404(Ticket, pk=request.POST.get('ticket_id')).delete()
+                return redirect(f"/reviews/delete_ticket/{request.POST.get('ticket_id')}")
 
         elif request.POST.get('role') == 'modify':
             # checking 'review_id' presence first to recognize if it is a review,
@@ -93,15 +162,6 @@ def my_posts(request):
         'star_count': star_count
     }
     return render(request, 'reviews/my_posts.html', context)
-
-
-class TicketDeleteView(DeleteView):
-    model = Ticket
-    success_url = reverse_lazy('reviews:my_posts')
-
-
-def success(request):
-    pass
 
 
 @login_required(login_url='reviews:login')
@@ -225,8 +285,6 @@ def user_follows(request):
                         search_message = "Aucun utilisateur ne correspond à cette recherche"
 
         elif request.POST.get('role') == 'search_all':
-            # unwanted = User.objects.filter(followed_by__user=request.user) | User.objects.filter(pk=request.user.pk)
-            # search_matches = User.objects.exclude(pk__in=[user.pk for user in unwanted])
             search_matches = User.objects.exclude(followed_by__user=request.user).exclude(pk=request.user.pk)
             if not search_matches:
                 if len(User.objects.all()) == 1:
@@ -235,10 +293,11 @@ def user_follows(request):
                     search_message = "Vous êtes déjà abonné a tous les utilisateurs"
         elif request.POST.get('role') == 'delete':
             following_id = request.POST.get('following_id')
-            follow_to_delete = get_object_or_404(UserFollow, pk=following_id)
-            user_to_unfollow = follow_to_delete.followed_user.username
-            follow_to_delete.delete()
-            search_message = f"{ user_to_unfollow } ne fait plus partie de votre liste d'abonnements"
+            return redirect(f"/reviews/delete_follow/{following_id}")
+            # follow_to_delete = get_object_or_404(UserFollow, pk=following_id)
+            # user_to_unfollow = follow_to_delete.followed_user.username
+            # follow_to_delete.delete()
+            # search_message = f"{ user_to_unfollow } ne fait plus partie de votre liste d'abonnements"
         elif request.POST.get('role') == 'add':
             user_to_follow = get_object_or_404(User, pk=request.POST.get('user_to_follow_id'))
             new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
