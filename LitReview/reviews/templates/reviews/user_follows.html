@@ -1,5 +1,3 @@
-
-
 {% extends 'reviews/base.html' %}
     {% block content %}
         </br>
@@ -19,13 +17,10 @@
                 <button type="submit">Montrer tous les utilisateurs auxquels je ne suis pas déjà abonné</button>
             </form>
             </br>
-            <h2>{{ search_message }}</h2>
             {% if messages %}
-            <ul class="messages">
             {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                <h2 class="{{ message.tags }}">{{ message }}</h2>
             {% endfor %}
-            </ul>
 {% endif %}
             <div class="container">
                 <div class="row">
@@ -47,7 +42,7 @@
                                                 {% csrf_token %}
                                                 <input type="hidden" class="hidden" value="add" name="role">
                                                 <input type="hidden" class="hidden" value="{{ user.id }}" name="user_to_follow_id">
-                                                <button type="submit">Ajouter à mes abonnements</button>
+                                                <button type="submit">S'abonner</button>
                                             </form>
                                         </td>
                                         {% else %}
@@ -64,13 +59,13 @@
                             <h2 class="section-heading mb-4">
                                 <span class="section-heading-lower">Abonnements</span>
                             </h2>
-                            <table>
+                            <table class="follow_table">
                                 {% for following in followings %}
-                                <tr class="user_table">
-                                    <td class="user_table">
+                                <tr class="follow_table">
+                                    <td class="follow_table">
                                         <span class="section-heading-upper">{{ following.followed_user }}</span>
                                     </td>
-                                    <td class="user_table">
+                                    <td class="follow_table">
                                         <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
                                             {% csrf_token %}
                                             <input type="hidden" class="hidden" value="delete" name="role">
@@ -100,7 +95,7 @@
                                             {% csrf_token %}
                                             <input type="hidden" class="hidden" value="add" name="role">
                                             <input type="hidden" class="hidden" value="{{ followed_by.user.id }}" name="user_to_follow_id">
-                                            <button type="submit">Ajouter à mes abonnements</button>
+                                            <button type="submit">S'abonner</button>
                                         </form>
                                     </td>
                                     {% endif %}
