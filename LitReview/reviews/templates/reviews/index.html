@@ -5,6 +5,12 @@
         <a href="{% url 'reviews:review_creation' %}"><button>Créer une critique</button></a>
         </br>
         </br>
+        {% if messages %}
+            </br>
+            {% for message in messages %}
+                <h2 class="{{ message.tags }}">{{ message }}</h2>
+            {% endfor %}
+        {% endif %}
         <div class="container">
             <div class="row">
                 <div class="col-xl-9 mx-auto">
