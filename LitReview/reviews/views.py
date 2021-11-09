@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, Http404
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from .models import Review, Ticket, UserFollow
 from itertools import chain
@@ -19,71 +19,57 @@ def redirect_to_reviews_index(request):
 
 
 class TicketDeleteView(DeleteView):
-    # def get_object(self, queryset=None):
-    #     """ Hook to ensure object is owned by request.user. """
-    #     obj = super(TicketDeleteView, self).get_object()
-    #     if not obj.user == self.request.user:
-    #         raise Http404
     model = Ticket
     success_url = reverse_lazy('reviews:my_posts')
 
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(TicketDeleteView, self).get_object()
+        if obj.user == self.request.user:
+            return obj
+        else:
+            raise PermissionDenied
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f'Votre ticket "{obj.title}" a bien été supprimé')
+        return super(TicketDeleteView, self).delete(request, *args, **kwargs)
+
 
 class ReviewDeleteView(DeleteView):
-    # def get_object(self, queryset=None):
-    #     """ Hook to ensure object is owned by request.user. """
-    #     obj = super(ReviewDeleteView, self).get_object()
-    #     if not obj.user == self.request.user:
-    #         raise Http404
     model = Review
     success_url = reverse_lazy('reviews:my_posts')
 
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(ReviewDeleteView, self).get_object()
+        if obj.user == self.request.user:
+            return obj
+        else:
+            raise PermissionDenied
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f'Votre critique "{obj.headline}" a bien été supprimée.')
+        return super(ReviewDeleteView, self).delete(request, *args, **kwargs)
+
 
 class UserFollowDeleteView(DeleteView):
-    # def get_object(self, queryset=None):
-    #     """ Hook to ensure object is owned by request.user. """
-    #     obj = super(UserFollowDeleteView, self).get_object()
-    #     if not obj.user == self.request.user:
-    #         raise Http404
     model = UserFollow
     success_url = reverse_lazy('reviews:user_follows')
 
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(UserFollowDeleteView, self).get_object()
+        if obj.user == self.request.user:
+            return obj
+        else:
+            raise PermissionDenied
 
-# class TicketDeleteView(DeleteView):
-#     model = Ticket
-#     success_url = reverse_lazy('reviews:my_posts')
-#
-#     def get_object(self, queryset=None):
-#         """ Hook to ensure object is owned by request.user. """
-#         obj = super(TicketDeleteView, self).get_object()
-#         if not obj.user == self.request.user:
-#             raise Http404
-#
-#
-# class ReviewDeleteView(DeleteView):
-#     model = Review
-#     success_url = reverse_lazy('reviews:my_posts')
-#
-#     def get_object(self, queryset=None):
-#         """ Hook to ensure object is owned by request.user. """
-#         obj = super(ReviewDeleteView, self).get_object()
-#         if not obj.user == self.request.user:
-#             raise Http404
-#
-#
-# class UserFollowDeleteView(DeleteView):
-#     model = UserFollow
-#     success_url = reverse_lazy('reviews:user_follows')
-#
-#     def get_object(self, queryset=None):
-#         """ Hook to ensure object is owned by request.user. """
-#         obj = super(UserFollowDeleteView, self).get_object()
-#         if not obj.user == self.request.user:
-#             raise Http404
-
-    # def delete(self, request, *args, **kwargs):
-    #     # obj = self.get_object()
-    #     messages.success(self.request, " ne fait plus partie de votre liste d'abonnements")
-    #     return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f"{obj.followed_user} ne fait plus partie de votre liste d'abonnements")
+        return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
 
 
 @login_required(login_url='reviews:login')
@@ -175,7 +161,8 @@ def ticket_creation(request):
                 ticket.description = form.cleaned_data['description']
                 ticket.image = form.cleaned_data['image']
                 ticket.save()
-                return HttpResponseRedirect('/reviews/my_posts')
+                messages.success(request, f'Votre ticket "{ticket.title}" a bien été modifié')
+                return redirect('/reviews/my_posts')
             else:
                 ticket = Ticket(
                     title=form.cleaned_data['title'],
@@ -184,7 +171,8 @@ def ticket_creation(request):
                     user=request.user
                 )
                 ticket.save()
-                return HttpResponseRedirect('/reviews/')
+                messages.success(request, f'Votre ticket "{ticket.title}" a bien été créé')
+                return redirect('/reviews/')
     else:
         form = TicketCreationForm()
 
@@ -205,7 +193,8 @@ def ticket_response(request):
                 review.rating = form.cleaned_data['rating']
                 review.body = form.cleaned_data['body']
                 review.save()
-                return HttpResponseRedirect('/reviews/my_posts')
+                messages.success(request, f'Votre critique "{review.headline}" a bien été modifiée')
+                return redirect('/reviews/my_posts')
             else:
                 review = Review(
                     headline=form.cleaned_data['headline'],
@@ -215,7 +204,8 @@ def ticket_response(request):
                     user=request.user
                 )
                 review.save()
-                return HttpResponseRedirect('/reviews/')
+                messages.success(request, f'Votre critique "{review.headline}" a bien été créée')
+                return redirect('/reviews/')
     else:
         form = TicketResponseForm()
 
@@ -249,7 +239,8 @@ def review_creation(request):
             )
             review.save()
 
-            return HttpResponseRedirect('/reviews/')
+            messages.success(request, f'Votre critique "{review.headline}" a bien été créée')
+            return redirect('/reviews/')
     else:
         form = ReviewCreationForm()
 
@@ -263,7 +254,6 @@ def review_creation(request):
 def user_follows(request):
     form = UserSearchForm()
     search_matches = []
-    search_message = ''
     if request.method == 'POST':
         if request.POST.get('role') == 'search':
             form = UserSearchForm(request.POST)
@@ -272,37 +262,34 @@ def user_follows(request):
                 if User.objects.filter(username=username_searched):
                     user_to_follow = get_object_or_404(User, username=username_searched)
                     if user_to_follow == request.user:
-                        search_message = f"Vous ne pouvez pas vous abonner à vous-même !"
+                        messages.success(request, f"Vous ne pouvez pas vous abonner à vous-même !")
                     elif UserFollow.objects.filter(user=request.user, followed_user=user_to_follow):
-                        search_message = f"Vous êtes déjà abonnée à {user_to_follow}"
+                        messages.success(request, f"Vous êtes déjà abonnée à {user_to_follow}")
                     else:
                         new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
                         new_follow.save()
-                        search_message = f"Vous êtes maintenant abonné à {user_to_follow}"
+                        messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}")
                 else:
                     search_matches = User.objects.filter(username__icontains=username_searched).exclude(pk=request.user.pk)
                     if not search_matches:
-                        search_message = "Aucun utilisateur ne correspond à cette recherche"
+                        messages.success(request, "Aucun utilisateur ne correspond à cette recherche")
 
         elif request.POST.get('role') == 'search_all':
             search_matches = User.objects.exclude(followed_by__user=request.user).exclude(pk=request.user.pk)
             if not search_matches:
                 if len(User.objects.all()) == 1:
-                    search_message = "Vous êtes le seul utilisateur de LITReview !"
+                    messages.success(request, "Vous êtes le seul utilisateur de LITReview !")
                 else:
-                    search_message = "Vous êtes déjà abonné a tous les utilisateurs"
+                    messages.success(request, "Vous êtes déjà abonné a tous les utilisateurs")
+
         elif request.POST.get('role') == 'delete':
             following_id = request.POST.get('following_id')
             return redirect(f"/reviews/delete_follow/{following_id}")
-            # follow_to_delete = get_object_or_404(UserFollow, pk=following_id)
-            # user_to_unfollow = follow_to_delete.followed_user.username
-            # follow_to_delete.delete()
-            # search_message = f"{ user_to_unfollow } ne fait plus partie de votre liste d'abonnements"
         elif request.POST.get('role') == 'add':
             user_to_follow = get_object_or_404(User, pk=request.POST.get('user_to_follow_id'))
             new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
             new_follow.save()
-            search_message = f"Vous êtes maintenant abonné à {user_to_follow}"
+            messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}")
 
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
@@ -315,7 +302,6 @@ def user_follows(request):
         'followed_bys': followed_bys,
         'followed_users': followed_users,
         'search_matches': search_matches,
-        'search_message': search_message
     }
     return render(request, 'reviews/user_follows.html', context)
 
@@ -326,7 +312,7 @@ def user_creation(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return HttpResponseRedirect('/reviews/')
+            return redirect('/reviews/')
     else:
         form = UserCreationForm()
     context = {'form': form}
