@@ -18,60 +18,6 @@ def redirect_to_reviews_index(request):
     return response
 
 
-class TicketDeleteView(DeleteView):
-    model = Ticket
-    success_url = reverse_lazy('reviews:my_posts')
-
-    def get_object(self, queryset=None):
-        """ Hook to ensure object is owned by request.user. """
-        obj = super(TicketDeleteView, self).get_object()
-        if obj.user == self.request.user:
-            return obj
-        else:
-            raise PermissionDenied
-
-    def delete(self, request, *args, **kwargs):
-        obj = self.get_object()
-        messages.success(self.request, f'Votre ticket "{obj.title}" a bien été supprimé')
-        return super(TicketDeleteView, self).delete(request, *args, **kwargs)
-
-
-class ReviewDeleteView(DeleteView):
-    model = Review
-    success_url = reverse_lazy('reviews:my_posts')
-
-    def get_object(self, queryset=None):
-        """ Hook to ensure object is owned by request.user. """
-        obj = super(ReviewDeleteView, self).get_object()
-        if obj.user == self.request.user:
-            return obj
-        else:
-            raise PermissionDenied
-
-    def delete(self, request, *args, **kwargs):
-        obj = self.get_object()
-        messages.success(self.request, f'Votre critique "{obj.headline}" a bien été supprimée.')
-        return super(ReviewDeleteView, self).delete(request, *args, **kwargs)
-
-
-class UserFollowDeleteView(DeleteView):
-    model = UserFollow
-    success_url = reverse_lazy('reviews:user_follows')
-
-    def get_object(self, queryset=None):
-        """ Hook to ensure object is owned by request.user. """
-        obj = super(UserFollowDeleteView, self).get_object()
-        if obj.user == self.request.user:
-            return obj
-        else:
-            raise PermissionDenied
-
-    def delete(self, request, *args, **kwargs):
-        obj = self.get_object()
-        messages.success(self.request, f"{obj.followed_user} ne fait plus partie de votre liste d'abonnements")
-        return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
-
-
 @login_required(login_url='reviews:login')
 def index(request):
     tickets = Ticket.objects.filter(user=request.user)
@@ -119,6 +65,7 @@ def my_posts(request):
                     'review': review,
                     'ticket': ticket,
                     'form': form,
+                    'role': 'modify',
                 }
                 return render(request, 'reviews/ticket_response.html', context)
 
@@ -317,3 +264,57 @@ def user_creation(request):
         form = UserCreationForm()
     context = {'form': form}
     return render(request, 'registration/signup.html', context)
+
+
+class TicketDeleteView(DeleteView):
+    model = Ticket
+    success_url = reverse_lazy('reviews:my_posts')
+
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(TicketDeleteView, self).get_object()
+        if obj.user == self.request.user:
+            return obj
+        else:
+            raise PermissionDenied
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f'Votre ticket "{obj.title}" a bien été supprimé')
+        return super(TicketDeleteView, self).delete(request, *args, **kwargs)
+
+
+class ReviewDeleteView(DeleteView):
+    model = Review
+    success_url = reverse_lazy('reviews:my_posts')
+
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(ReviewDeleteView, self).get_object()
+        if obj.user == self.request.user:
+            return obj
+        else:
+            raise PermissionDenied
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f'Votre critique "{obj.headline}" a bien été supprimée.')
+        return super(ReviewDeleteView, self).delete(request, *args, **kwargs)
+
+
+class UserFollowDeleteView(DeleteView):
+    model = UserFollow
+    success_url = reverse_lazy('reviews:user_follows')
+
+    def get_object(self, queryset=None):
+        """ Hook to ensure object is owned by request.user. """
+        obj = super(UserFollowDeleteView, self).get_object()
+        if obj.user == self.request.user:
+            return obj
+        else:
+            raise PermissionDenied
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f"{obj.followed_user} ne fait plus partie de votre liste d'abonnements")
+        return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
