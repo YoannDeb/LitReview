@@ -108,7 +108,7 @@ def ticket_creation(request):
                 ticket.description = form.cleaned_data['description']
                 ticket.image = form.cleaned_data['image']
                 ticket.save()
-                messages.success(request, f'Votre ticket "{ticket.title}" a bien été modifié')
+                messages.success(request, f'Votre ticket "{ticket.title}" a bien été modifié.')
                 return redirect('/reviews/my_posts')
             else:
                 ticket = Ticket(
@@ -118,7 +118,7 @@ def ticket_creation(request):
                     user=request.user
                 )
                 ticket.save()
-                messages.success(request, f'Votre ticket "{ticket.title}" a bien été créé')
+                messages.success(request, f'Votre ticket "{ticket.title}" a bien été créé.')
                 return redirect('/reviews/')
     else:
         form = TicketCreationForm()
@@ -140,7 +140,7 @@ def ticket_response(request):
                 review.rating = form.cleaned_data['rating']
                 review.body = form.cleaned_data['body']
                 review.save()
-                messages.success(request, f'Votre critique "{review.headline}" a bien été modifiée')
+                messages.success(request, f'Votre critique "{review.headline}" a bien été modifiée.')
                 return redirect('/reviews/my_posts')
             else:
                 review = Review(
@@ -151,7 +151,7 @@ def ticket_response(request):
                     user=request.user
                 )
                 review.save()
-                messages.success(request, f'Votre critique "{review.headline}" a bien été créée')
+                messages.success(request, f'Votre critique "{review.headline}" a bien été créée.')
                 return redirect('/reviews/')
     else:
         form = TicketResponseForm()
@@ -186,7 +186,7 @@ def review_creation(request):
             )
             review.save()
 
-            messages.success(request, f'Votre critique "{review.headline}" a bien été créée')
+            messages.success(request, f'Votre critique "{review.headline}" a bien été créée.')
             return redirect('/reviews/')
     else:
         form = ReviewCreationForm()
@@ -211,15 +211,15 @@ def user_follows(request):
                     if user_to_follow == request.user:
                         messages.success(request, f"Vous ne pouvez pas vous abonner à vous-même !")
                     elif UserFollow.objects.filter(user=request.user, followed_user=user_to_follow):
-                        messages.success(request, f"Vous êtes déjà abonnée à {user_to_follow}")
+                        messages.success(request, f"Vous êtes déjà abonnée à {user_to_follow}.")
                     else:
                         new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
                         new_follow.save()
-                        messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}")
+                        messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}.")
                 else:
                     search_matches = User.objects.filter(username__icontains=username_searched).exclude(pk=request.user.pk)
                     if not search_matches:
-                        messages.success(request, "Aucun utilisateur ne correspond à cette recherche")
+                        messages.success(request, "Aucun utilisateur ne correspond à cette recherche.")
 
         elif request.POST.get('role') == 'search_all':
             search_matches = User.objects.exclude(followed_by__user=request.user).exclude(pk=request.user.pk)
@@ -227,7 +227,7 @@ def user_follows(request):
                 if len(User.objects.all()) == 1:
                     messages.success(request, "Vous êtes le seul utilisateur de LITReview !")
                 else:
-                    messages.success(request, "Vous êtes déjà abonné a tous les utilisateurs")
+                    messages.success(request, "Vous êtes déjà abonné a tous les utilisateurs.")
 
         elif request.POST.get('role') == 'delete':
             following_id = request.POST.get('following_id')
@@ -236,7 +236,7 @@ def user_follows(request):
             user_to_follow = get_object_or_404(User, pk=request.POST.get('user_to_follow_id'))
             new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
             new_follow.save()
-            messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}")
+            messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}.")
 
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
@@ -280,7 +280,7 @@ class TicketDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
-        messages.success(self.request, f'Votre ticket "{obj.title}" a bien été supprimé')
+        messages.success(self.request, f'Votre ticket "{obj.title}" a bien été supprimé.')
         return super(TicketDeleteView, self).delete(request, *args, **kwargs)
 
 
@@ -316,5 +316,5 @@ class UserFollowDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
-        messages.success(self.request, f"{obj.followed_user} ne fait plus partie de votre liste d'abonnements")
+        messages.success(self.request, f"{obj.followed_user} ne fait plus partie de votre liste d'abonnements.")
         return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
