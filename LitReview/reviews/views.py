@@ -14,12 +14,22 @@ from django.contrib import messages
 
 
 def redirect_to_reviews_index(request):
-    response = redirect('reviews:index')
-    return response
+    """
+    Simple view used in urls.py to redirect from root to reviews app index.
+    :param request:
+    :return: Redirection to reviews' index.
+    """
+    return redirect('reviews:index')
 
 
 @login_required(login_url='reviews:login')
 def index(request):
+    """
+    This index view finds tickets and reviews from followed users and actual users.
+    Merges them and sort them the most recent first.
+    :param request:
+    :return: A render of the index page using it's template.
+    """
     tickets = Ticket.objects.filter(user=request.user)
     reviews = Review.objects.filter(user=request.user)
 
@@ -41,6 +51,13 @@ def index(request):
 
 @login_required(login_url='reviews:login')
 def my_posts(request):
+    """
+    This index view finds tickets and reviews from actual users.
+    Merges them and sort them the most recent first.
+    It also handles deletion and modification of tickets and reviews.
+    :param request:
+    :return: A render of the index page using it's template.
+    """
     star_count = [0, 1, 2, 3, 4]
     if request.method == 'POST':
         if request.POST.get('role') == 'delete':
@@ -99,6 +116,11 @@ def my_posts(request):
 
 @login_required(login_url='reviews:login')
 def ticket_creation(request):
+    """
+
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
         form = TicketCreationForm(request.POST, request.FILES)
         if form.is_valid():
