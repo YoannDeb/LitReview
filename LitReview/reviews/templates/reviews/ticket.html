@@ -19,7 +19,7 @@
             <form class="form" action="{% url 'reviews:ticket_response' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
-                <button type="submit">Soumettre une critique</button>
+                <button class="btn btn-warning" type="submit">Soumettre une critique</button>
             </form>
         {% endif %}
     {% endif %}
@@ -29,14 +29,14 @@
             {% csrf_token %}
             <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
             <input type="hidden" class="hidden" value="modify" name="role">
-            <button type="submit">Modifier</button>
+            <button class="btn btn-warning" type="submit">Modifier</button>
         </form>
 
         <form class="form" action="{% url 'reviews:my_posts' %}" method="post">
             {% csrf_token %}
             <input type="hidden" class="hidden" value="{{ ticket.id }}" name="ticket_id">
             <input type="hidden" class="hidden" value="delete" name="role">
-            <button type="submit">Supprimer</button>
+            <button class="btn btn-danger" type="submit">Supprimer</button>
         </form>
     {% endif %}
 </div>
