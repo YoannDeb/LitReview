@@ -38,13 +38,13 @@
             <input type="hidden" class="hidden" value="{{ review.id }}" name="review_id">
             <input type="hidden" class="hidden" value="{{ review.ticket.id }}" name="ticket_id">
             <input type="hidden" class="hidden" value="modify" name="role">
-            <button type="submit">Modifier</button>
+            <button class="btn btn-warning" type="submit">Modifier</button>
         </form>
         <form class="form" action="{% url 'reviews:my_posts' %}" method="post">
             {% csrf_token %}
             <input type="hidden" class="hidden" value="{{ review.id }}" name="review_id">
             <input type="hidden" class="hidden" value="delete" name="role">
-            <button type="submit">Supprimer</button>
+            <button class="btn btn-danger" type="submit">Supprimer</button>
         </form>
     {% endif %}
     </div>
