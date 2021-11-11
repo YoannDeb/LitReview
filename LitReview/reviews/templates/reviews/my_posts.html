@@ -1,16 +1,18 @@
 {% extends 'reviews/base.html' %}
 {% block content %}
     <section class="page-section cta text-center">
-        <h2>Vos posts</h2>
-        {% if messages %}
-            </br>
-            {% for message in messages %}
-                <h2 class="{{ message.tags }}">{{ message }}</h2>
-            {% endfor %}
-        {% endif %}
+        <h1>Vos posts</h1>
         <div class="container">
             <div class="row">
                 <div class="col-xl-9 mx-auto">
+                    {% if messages %}
+                        </br>
+                        {% for message in messages %}
+                            <div class="alert alert-success">
+                                <h2 class="{{ message.tags }}">{{ message }}</h2>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     {% for ticket_or_review in tickets_and_reviews %}
                         {% if ticket_or_review.title %}
                             {% include 'reviews/ticket.html' with ticket=ticket_or_review %}
@@ -22,8 +24,8 @@
                         <h2>Vous n'avez encore rien posté...</h2>
                         </br>
                         </br>
-                        <a href="{% url 'reviews:ticket_creation' %}"><button>Demander une critique</button></a>
-                        <a href="{% url 'reviews:review_creation' %}"><button>Créer une critique</button></a>
+                        <a href="{% url 'reviews:ticket_creation' %}"><button class="btn btn-warning">Demander une critique</button></a>
+                        <a href="{% url 'reviews:review_creation' %}"><button class="btn btn-warning">Créer une critique</button></a>
                     {% endfor %}
                 </div>
             </div>
