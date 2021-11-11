@@ -8,23 +8,26 @@
                 {% csrf_token %}
                 {{ form }}
                 <input type="hidden" class="hidden" value="search" name="role">
-                <button type="submit">Rechercher</button>
+                <button class="btn btn-warning" type="submit">Rechercher</button>
             </form>
             </br>
             <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" class="hidden" value="search_all" name="role">
-                <button type="submit">Montrer tous les utilisateurs auxquels je ne suis pas déjà abonné</button>
+                <button class="btn btn-warning" type="submit">Montrer tous les utilisateurs auxquels je ne suis pas déjà abonné</button>
             </form>
             </br>
-            {% if messages %}
-            {% for message in messages %}
-                <h2 class="{{ message.tags }}">{{ message }}</h2>
-            {% endfor %}
-{% endif %}
             <div class="container">
                 <div class="row">
                     <div class="col-xl-9 mx-auto">
+                        {% if messages %}
+                            </br>
+                            {% for message in messages %}
+                                <div class="alert alert-success">
+                                    <h2 class="{{ message.tags }}">{{ message }}</h2>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                         {% if search_matches %}
                             <div class="cta-inner bg-faded text-center rounded">
                                 <h2 class="section-heading mb-4">
@@ -42,12 +45,12 @@
                                                 {% csrf_token %}
                                                 <input type="hidden" class="hidden" value="add" name="role">
                                                 <input type="hidden" class="hidden" value="{{ user.id }}" name="user_to_follow_id">
-                                                <button type="submit">S'abonner</button>
+                                                <button class="btn btn-warning" type="submit">S'abonner</button>
                                             </form>
                                         </td>
                                         {% else %}
                                         <td>
-                                            <button disabled="true">Déjà dans mes abonnements</button>
+                                            <button class="btn btn-primary">Déjà dans mes abonnements</button>
                                         </td>
                                         {% endif %}
                                     </tr>
@@ -70,7 +73,7 @@
                                             {% csrf_token %}
                                             <input type="hidden" class="hidden" value="delete" name="role">
                                             <input type="hidden" class="hidden" value="{{ following.id }}" name="following_id">
-                                            <button type="submit">Se désabonner</button>
+                                            <button class="btn btn-danger" type="submit">Se désabonner</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -95,7 +98,7 @@
                                             {% csrf_token %}
                                             <input type="hidden" class="hidden" value="add" name="role">
                                             <input type="hidden" class="hidden" value="{{ followed_by.user.id }}" name="user_to_follow_id">
-                                            <button type="submit">S'abonner</button>
+                                            <button class="btn btn-warning" type="submit">S'abonner</button>
                                         </form>
                                     </td>
                                     {% endif %}
