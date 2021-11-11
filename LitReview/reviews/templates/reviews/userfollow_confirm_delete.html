@@ -7,9 +7,9 @@
                 </br>
                 <form method="post">{% csrf_token %}
                     <h2>Êtes vous sûr de vouloir supprimer votre abonnement à {{ object.followed_user }} ?</h2>
-                    <button type="submit" value="Confirm">Confirmer</button>
+                    <button class="btn btn-danger" type="submit" value="Confirm">Confirmer</button>
                 </form>
-                <a href="{% url 'reviews:user_follows' %}"><button>Annuler</button></a>
+                <a href="{% url 'reviews:user_follows' %}"><button class="btn btn-warning">Annuler</button></a>
                 </br>
                 </br>
             </div>
