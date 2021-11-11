@@ -11,10 +11,6 @@
     text-align: center;
 }
 
-button {
-    border-radius: 15px;
-}
-
 .checked {
   color: orange;
 }
