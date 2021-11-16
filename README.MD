@@ -44,6 +44,19 @@ The password for all users is their username.
 You can use the user yoann, password yoann, which is admin of the site (can access http://127.0.0.1:8080/admin).
 You can then consult all users in his follow page, or in the admin interface, or create new users.
 
+List of example users:
+* Adonis
+* Aude
+* Gérard
+* Jacques
+* Jerome
+* Julien
+* Paul
+* Robert
+* audrey
+* bernard
+* yoann
+
 ### Reset of database:
 
 Just delete db.sqlite file, then enter the following command in a terminal in the app folder with the environment activated:
