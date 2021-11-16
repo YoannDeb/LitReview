@@ -117,9 +117,11 @@ def my_posts(request):
 @login_required(login_url='reviews:login')
 def ticket_creation(request):
     """
-
+    View to modify or create a new ticket.
     :param request:
-    :return:
+    :return: A redirection to my_posts if the ticket is modified,
+        a redirection to feed page if the ticket is created,
+        or a render of it's template with a blank form if user wants to create a new ticket.
     """
     if request.method == 'POST':
         form = TicketCreationForm(request.POST, request.FILES)
@@ -153,6 +155,13 @@ def ticket_creation(request):
 
 @login_required(login_url='reviews:login')
 def ticket_response(request):
+    """
+    View to modify or create a review in response to an existing ticket.
+    :param request:
+    :return: A redirection to my_posts if the review is modified,
+        a redirection to feed page if the review is created,
+        or a render of it's template with a blank form if user wants to create a new review.
+    """
     if request.method == 'POST':
         form = TicketResponseForm(request.POST)
         if form.is_valid():
@@ -188,6 +197,12 @@ def ticket_response(request):
 
 @login_required(login_url='reviews:login')
 def review_creation(request):
+    """
+    View to create a ticket and it's review at the same time.
+    :param request:
+    :return: A redirection to feed page if the ticket and review is created,
+        or a render of it's template with a blank form if user wants to create a new ticket and review.
+    """
     if request.method == 'POST':
         form = ReviewCreationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -221,6 +236,11 @@ def review_creation(request):
 
 @login_required(login_url='reviews:login')
 def user_follows(request):
+    """
+    View to show user's follows and followers, to search and add new follows, or to delete existing follows.
+    :param request:
+    :return: A render of it's template with the search, add or delete form, or a blank form.
+    """
     form = UserSearchForm()
     search_matches = []
     if request.method == 'POST':
@@ -276,6 +296,13 @@ def user_follows(request):
 
 
 def user_creation(request):
+    """
+    This view manages user creation using generic django UserCreationForm.
+    All passwords filters have been deactivated in settings.py.
+    :param request:
+    :return: A render of it's template with UserCreationForm as a context,
+        or a redirection to the feed page after automatically logging the user if the user creation is successful.
+    """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -289,6 +316,9 @@ def user_creation(request):
 
 
 class TicketDeleteView(DeleteView):
+    """
+    Ticket delete confirmation view, children of django's generic DeleteView.
+    """
     model = Ticket
     success_url = reverse_lazy('reviews:my_posts')
 
@@ -301,12 +331,16 @@ class TicketDeleteView(DeleteView):
             raise PermissionDenied
 
     def delete(self, request, *args, **kwargs):
+        """ Hook to add a confirmation message to the messages queue when ticket is deleted """
         obj = self.get_object()
         messages.success(self.request, f'Votre ticket "{obj.title}" a bien été supprimé.')
         return super(TicketDeleteView, self).delete(request, *args, **kwargs)
 
 
 class ReviewDeleteView(DeleteView):
+    """
+    Review delete confirmation view, children of django's generic DeleteView.
+    """
     model = Review
     success_url = reverse_lazy('reviews:my_posts')
 
@@ -319,12 +353,16 @@ class ReviewDeleteView(DeleteView):
             raise PermissionDenied
 
     def delete(self, request, *args, **kwargs):
+        """ Hook to add a confirmation message to the messages queue when ticket is deleted """
         obj = self.get_object()
         messages.success(self.request, f'Votre critique "{obj.headline}" a bien été supprimée.')
         return super(ReviewDeleteView, self).delete(request, *args, **kwargs)
 
 
 class UserFollowDeleteView(DeleteView):
+    """
+    User's Follow delete confirmation view, children of django's generic DeleteView.
+    """
     model = UserFollow
     success_url = reverse_lazy('reviews:user_follows')
 
@@ -337,6 +375,7 @@ class UserFollowDeleteView(DeleteView):
             raise PermissionDenied
 
     def delete(self, request, *args, **kwargs):
+        """ Hook to add a confirmation message to the messages queue when ticket is deleted """
         obj = self.get_object()
         messages.success(self.request, f"{obj.followed_user} ne fait plus partie de votre liste d'abonnements.")
         return super(UserFollowDeleteView, self).delete(request, *args, **kwargs)
