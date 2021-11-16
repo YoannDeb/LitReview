@@ -13,7 +13,7 @@ Open a terminal and navigate into the folder you want LitReview to be downloaded
 * On Linux or macOS:
 ```bash
 git clone https://github.com/YoannDeb/LitReview.git
-cd chess_tournament
+cd LitReview
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
@@ -24,7 +24,7 @@ python manage.py runserver
 * On Windows:
 ```bash
 git clone https://github.com/YoannDeb/LitReview.git
-cd chess_tournament
+cd LitReview
 python -m venv env
 env\Scripts\activate
 pip install -r requirements.txt
@@ -34,7 +34,31 @@ python manage.py runserver
 
 You can then access LitReview locally at the following address: http://127.0.0.1:8080
 
-## How does to use th app?
+## Example database:
+
+### Consultation of examples:
+
+An example db.sqlite3 is included in the repository.
+It contains fictional users, tickets and reviews.
+The password for all users is their username.
+You can use the user yoann, password yoann, which is admin of the site (can access http://127.0.0.1:8080/admin).
+You can then consult all users in his follow page, or in the admin interface, or create new users.
+
+### Reset of database:
+
+Just delete db.sqlite file, then enter the following command in a terminal in the app folder with the environment activated:
+```
+python manage.py migrate
+```
+
+
+If you want to recreate an admin user, type in a terminal in the app folder with the environment activated:
+```
+python manage.py createsuperuser 
+```
+Then fill the username, mail and password two times when asked.
+
+## How to use the app?
 
 ### Authentication:
 
