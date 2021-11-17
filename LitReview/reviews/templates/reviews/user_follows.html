@@ -33,14 +33,14 @@
                                 <h2 class="section-heading mb-4">
                                     <span class="section-heading-lower">Résultats de la recherche</span>
                                 </h2>
-                                <table>
+                                <table class="follow_table">
                                     {% for user in search_matches %}
                                     <tr>
-                                        <td>
+                                        <td class="follow_table">
                                             <span class="section-heading-upper">{{ user.username }}</span>
                                         </td>
                                         {% if user not in followed_users %}
-                                        <td>
+                                        <td class="follow_table">
                                             <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
                                                 {% csrf_token %}
                                                 <input type="hidden" class="hidden" value="add" name="role">
@@ -86,14 +86,14 @@
                             <h2 class="section-heading mb-4">
                                 <span class="section-heading-lower">Abonnés</span>
                             </h2>
-                            <table>
+                            <table class="follow_table">
                                 {% for followed_by in followed_bys %}
                                 <tr>
-                                    <td>
+                                    <td class="follow_table">
                                         <span class="section-heading-upper">{{ followed_by.user }}</span>
                                     </td>
                                     {% if followed_by.user not in followed_users %}
-                                    <td>
+                                    <td class="follow_table">
                                         <form class="form" action="{% url 'reviews:user_follows' %}" method="post">
                                             {% csrf_token %}
                                             <input type="hidden" class="hidden" value="add" name="role">
