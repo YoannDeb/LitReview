@@ -32,7 +32,7 @@ cd LitReview
 python manage.py runserver
 ```
 
-You can then access LitReview locally at the following address: http://127.0.0.1:8080
+You can then access LitReview locally at the following address: http://127.0.0.1:8000
 
 ## Example database:
 
@@ -41,7 +41,7 @@ You can then access LitReview locally at the following address: http://127.0.0.1
 An example db.sqlite3 is included in the repository.
 It contains fictional users, tickets and reviews.
 The password for all users is their username.
-You can use the user yoann, password yoann, which is admin of the site (can access http://127.0.0.1:8080/admin).
+You can use the user yoann, password yoann, which is admin of the site (can access http://127.0.0.1:8000/admin).
 You can then consult all users in his follow page, or in the admin interface, or create new users.
 
 List of example users:
