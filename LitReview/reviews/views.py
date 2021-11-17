@@ -1,9 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
-from .models import Review, Ticket, UserFollow
-from itertools import chain
-from .forms import TicketResponseForm, TicketCreationForm, ReviewCreationForm, UserSearchForm
 from django.views.generic.edit import DeleteView
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -11,6 +8,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib import messages
+from itertools import chain
+
+from .forms import TicketResponseForm, TicketCreationForm, ReviewCreationForm, UserSearchForm
+from .models import Review, Ticket, UserFollow
 
 
 def redirect_to_reviews_index(request):
@@ -259,7 +260,9 @@ def user_follows(request):
                         new_follow.save()
                         messages.success(request, f"Vous êtes maintenant abonné à {user_to_follow}.")
                 else:
-                    search_matches = User.objects.filter(username__icontains=username_searched).exclude(pk=request.user.pk)
+                    search_matches = User.objects.filter(
+                        username__icontains=username_searched).exclude(
+                        pk=request.user.pk)
                     if not search_matches:
                         messages.success(request, "Aucun utilisateur ne correspond à cette recherche.")
 
