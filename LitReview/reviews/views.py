@@ -252,9 +252,9 @@ def user_follows(request):
                 if User.objects.filter(username=username_searched):
                     user_to_follow = get_object_or_404(User, username=username_searched)
                     if user_to_follow == request.user:
-                        messages.danger(request, f"Vous ne pouvez pas vous abonner à vous-même !")
+                        messages.error(request, f"Vous ne pouvez pas vous abonner à vous-même !")
                     elif UserFollow.objects.filter(user=request.user, followed_user=user_to_follow):
-                        messages.warning(request, f"Vous êtes déjà abonnée à {user_to_follow}.")
+                        messages.error(request, f"Vous êtes déjà abonnée à {user_to_follow}.")
                     else:
                         new_follow = UserFollow(user=request.user, followed_user=user_to_follow)
                         new_follow.save()
@@ -264,15 +264,15 @@ def user_follows(request):
                         username__icontains=username_searched).exclude(
                         pk=request.user.pk)
                     if not search_matches:
-                        messages.danger(request, "Aucun utilisateur ne correspond à cette recherche.")
+                        messages.error(request, "Aucun utilisateur ne correspond à cette recherche.")
 
         elif request.POST.get('role') == 'search_all':
             search_matches = User.objects.exclude(followed_by__user=request.user).exclude(pk=request.user.pk)
             if not search_matches:
                 if len(User.objects.all()) == 1:
-                    messages.danger(request, "Vous êtes le seul utilisateur de LITReview !")
+                    messages.error(request, "Vous êtes le seul utilisateur de LITReview !")
                 else:
-                    messages.danger(request, "Vous êtes déjà abonné a tous les utilisateurs.")
+                    messages.error(request, "Vous êtes déjà abonné a tous les utilisateurs.")
 
         elif request.POST.get('role') == 'delete':
             following_id = request.POST.get('following_id')
