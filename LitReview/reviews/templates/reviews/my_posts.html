@@ -8,9 +8,15 @@
                     {% if messages %}
                         </br>
                         {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                <h2 class="{{ message.tags }}">{{ message }}</h2>
-                            </div>
+                            {% if message.tags == "error" %}
+                                <div class="alert alert-danger" role="alert">
+                                    <h2 class="{{ message.tags }}">{{ message }}</h2>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-{{ message.tags }}" role="alert">
+                                    <h2 class="{{ message.tags }}">{{ message }}</h2>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     {% endif %}
                     {% for ticket_or_review in tickets_and_reviews %}
