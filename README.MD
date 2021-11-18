@@ -59,7 +59,7 @@ List of example users:
 
 ### Reset of database:
 
-Just delete db.sqlite file, then enter the following command in a terminal in the app folder with the environment activated:
+Just delete db.sqlite3 file, then enter the following command in a terminal in the app folder with the environment activated:
 ```
 python manage.py migrate
 ```
