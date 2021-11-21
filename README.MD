@@ -80,7 +80,7 @@ There you can log in with your username and password or create an account using 
 
 ### Flux:
 
-"Flux" page is your main feed where you'll see all your posts and all your followed users posts, including tickets and reviews, sorted by time of publication (newer first).
+"Flux" page is your main feed where you'll see all your posts and all your followed users' posts, including tickets and reviews, sorted by time of publication (newer first).
 
 You can create a new ticket (i.e. ask for a book review) by clicking "Demander une critique" button.
 You can create a new review (i.e. create a ticket and the review associated) by clicking the "Créer une critique" button.
