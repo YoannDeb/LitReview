@@ -252,7 +252,7 @@ def user_follows(request):
                 if User.objects.filter(username=username_searched):
                     user_to_follow = get_object_or_404(User, username=username_searched)
                     if user_to_follow == request.user:
-                        messages.error(request, f"Vous ne pouvez pas vous abonner à vous-même !")
+                        messages.error(request, "Vous ne pouvez pas vous abonner à vous-même !")
                     elif UserFollow.objects.filter(user=request.user, followed_user=user_to_follow):
                         messages.error(request, f"Vous êtes déjà abonnée à {user_to_follow}.")
                     else:
@@ -285,9 +285,7 @@ def user_follows(request):
 
     followings = UserFollow.objects.filter(user=request.user)
     followed_bys = UserFollow.objects.filter(followed_user=request.user)
-    followed_users = []
-    for following in followings:
-        followed_users.append(following.followed_user)
+    followed_users = [following.followed_user for following in followings]
     context = {
         'form': form,
         'followings': followings,
